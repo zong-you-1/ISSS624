@@ -2,10 +2,4 @@
 title: "ISSS624"
 ---
 
-Welcome to ISSS624 Applied Geospatial Analytics.
-
-To learn more about Quarto websites visit <https://quarto.org/docs/websites>.
-
-```{r}
-1 + 1
-```
+This is for the submission of work for ISSS624 Applied Geospatial Analytics.
