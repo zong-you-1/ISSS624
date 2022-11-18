@@ -5,11 +5,21 @@ editor: visual
 
 ## Overview
 
-In this hands-on exercise, I learn how to import and wrangle geospatial data using appropriate R packages.???
+In this hands-on exercise, I learn how to
+
+-   import and wrangle geospatial data using appropriate R packages
+
+-   project geospatial data to another coordinate system
+
+-   import and converting aspatial data
+
+-   plot choropleth map
+
+# Part 1
 
 ## Getting Started
 
-The code chunk below install and load sf and tidyverse packages into R environment.
+***p_load*** function of **pacman** package is used to install and load sf and tidyverse packages into R environment.
 
 ```{r}
 pacman::p_load(sf, tidyverse)
@@ -19,6 +29,382 @@ pacman::p_load(sf, tidyverse)
 
 ### Importing polygon feature data
 
+***st_read()*** function of **sf** package imports shapefile into R as a polygon feature data frame.
+
+Note that **dsn** defines the data path, and **layer** is the shapefile name.
+
+Note that no extension such as .shp, .dbf, .prj and .shx are needed.
+
 ```{r}
 mpsz <- st_read(dsn = "data/geospatial", layer = "MP14_SUBZONE_WEB_PL")
 ```
+
+Note that **MP14_SUBZONE_WEB_PL** is ***multipolyon***.
+
+```{r}
+cyclingpath <- st_read(dsn = "data/geospatial", layer = "CyclingPath")
+```
+
+Note that **CyclingPath** is ***multilinestring***.
+
+### Importing GIS data in kml format
+
+Note that complete path and kml file extension were provided.
+
+```{r}
+preschool <- st_read("data/geospatial/pre-schools-location-kml.kml")
+```
+
+Note that **preschool** is ***point*** feature data frame.
+
+[**Guide says preschool is in wgs84 coordinates system, but mine is already SVY21**]{.underline}
+
+## Checking Content of A Simple Feature Data Frame
+
+### Working with *st_geometry()*
+
+***st_geometry()*** displays basic information of the feature class such as type of geometry, the geographic extent of the features and the coordinate system of the data.
+
+```{r}
+st_geometry(mpsz)
+```
+
+### Working with *glimpse()*
+
+***glimpse()*** provides more information about the associated attribute information in the data frame. It reveals the data type of each fields.
+
+```{r}
+glimpse(mpsz)
+```
+
+### Working with *head()*
+
+***head()*** is the Base R function to reveal complete information of a feature object.
+
+```{r}
+head(mpsz, n=5)
+```
+
+## Plotting the Geospatial Data
+
+***plot()*** of R Graphic is used to visualise geospatial features.
+
+```{r}
+plot(mpsz)
+```
+
+The default plot of an sf object is a multi-plot of all attributes, up to a reasonable maximum as shown above. We can, however, choose to plot only the geometry by using the code chunk below.
+
+```{r}
+plot(st_geometry(mpsz))
+```
+
+We can also choose to plot the sf object by using a specific attribute as shown in the code chunk below.
+
+```{r}
+plot(mpsz["PLN_AREA_N"])
+```
+
+## Working with Projection
+
+We need to ensure that geospatial data are projected using similar coordinate system, and this is where map projection comes in.
+
+The technical term of the process to project a simple feature data frame from one coordinate system to another is called **projection transformation**.
+
+### Assigning EPSG code to a simple feature data frame
+
+One of the common issue that can happen during importing geospatial data into R is that the coordinate system of the source data was either missing (such as due to missing .proj for ESRI shapefile) or wrongly assigned during the importing process.
+
+The following example shows that although mpsz is projected in svy21 (whose EPSG = 3414), the end of the print indicates that the EPSG is 9001, which is wrong.
+
+```{r}
+st_crs(mpsz)
+```
+
+***st_set_crs()*** is used to assign the correct EPSG code.
+
+```{r}
+mpsz3414 <- st_set_crs(mpsz,3414)
+```
+
+```{r}
+st_crs(mpsz3414)
+```
+
+### Transforming projection of preschool from wgs84 to svy21
+
+If we need to reproject a feature data frame from one geographic coordinate system to another, we need to use ***st_transform()***.
+
+```{r}
+preschool3414 <- st_transform(preschool, crs = 3414)
+```
+
+## Importing and Converting Aspatial Data
+
+Aspatial data is not a geospatial data, but contains two fields that capture the x- and y- coordinates of the data points.
+
+### Importing and inspecting aspatial data
+
+```{r}
+listings <- read_csv("data/aspatial/listings.csv")
+```
+
+```{r}
+list(listings) 
+```
+
+### Creating a simple feature data frame from aspatial data frame
+
+***st_as_sf()*** converts data frame to simple feature data frame.
+
+```{r}
+listings_sf <- st_as_sf(listings, 
+                       coords = c("longitude", "latitude"),
+                       crs=4326) %>%
+  st_transform(crs = 3414)
+```
+
+Note that **coords** argument requires the column name of the x-coordinates followed by y-coordinates.
+
+Note that **crs** argument requires the coordinates system in EPSG format.
+
+Note that **%\>%** is used to nest st_transform() to transform the newly created simple feature data frame into svy21 projected coordinates system.
+
+By inspecting **listings_sf** below, note that a new column **geometry** has been added, while **longitude** and **latitude** have been dropped.
+
+```{r}
+glimpse(listings_sf)
+```
+
+## Geoprocessing with sf package
+
+### Buffering
+
+Scenario:
+
+The authority is planning to upgrade the exiting cycling path. To do so, they need to acquire 5 metres of reserved land on the both sides of the current cycling path. You are tasked to determine the extend of the land need to be acquired and their total area.
+
+Solution:
+
+Firstly, use ***st_buffer()*** to compute the 5-meter buffers around cycling paths.
+
+```{r}
+buffer_cycling <- st_buffer(cyclingpath, dist=5, nQuadSegs = 30)
+```
+
+Next, calculate the area of the buffers:
+
+```{r}
+buffer_cycling$AREA <- st_area(buffer_cycling)
+```
+
+Lastly, use ***sum()*** to derive the total land involved.
+
+```{r}
+sum(buffer_cycling$AREA)
+```
+
+### Point-in-polygon count
+
+Scenario:
+
+A pre-school service group want to find out the numbers of pre-schools in each Planning Subzone.
+
+Solution:
+
+First, identify pre-schools located inside each Planning Subzone by using ***st_intersects()***. Next, use ***length()*** to calculate the number of pre-schools that fall inside each planning subzone.
+
+The following code chunk performs both operations at one go:
+
+```{r}
+mpsz3414$`PreSch Count`<- lengths(st_intersects(mpsz3414, preschool3414))
+```
+
+Check summary statistics:
+
+```{r}
+summary(mpsz3414$`PreSch Count`)
+```
+
+List planning subzone with the most number of pre-school:
+
+```{r}
+top_n(mpsz3414, 1, `PreSch Count`)
+```
+
+**++ Calculate the density of pre-school by planning subzone**
+
+Solution:
+
+Firstly, use ***st_area()*** to derive the area of each planning subzone.
+
+```{r}
+mpsz3414$Area <- mpsz3414 %>%
+  st_area()
+```
+
+Next, use ***mutate()*** to compute density:
+
+```{r}
+mpsz3414 <- mpsz3414 %>%
+  mutate(`PreSch Density` = `PreSch Count`/Area * 1000000)
+```
+
+List planning subzone with the highest density:
+
+```{r}
+top_n(mpsz3414, 1, `PreSch Density`)
+```
+
+## Exploratory Data Analysis (EDA)
+
+Histogram to reveal the distribution of PreSch Density using ***hist()*** of R Graphics:
+
+```{r}
+hist(mpsz3414$`PreSch Density`)
+```
+
+Using **ggplot2** functions for better visualisations:
+
+```{r}
+ggplot(data=mpsz3414, 
+       aes(x= as.numeric(`PreSch Density`)))+
+  geom_histogram(bins=20, 
+                 color="black", 
+                 fill="light blue") +
+  labs(title = "Are pre-school even distributed in Singapore?",
+       subtitle= "There are many planning sub-zones with a single pre-school, on the other hand, \nthere are two planning sub-zones with at least 20 pre-schools",
+      x = "Pre-school density (per km sq)",
+      y = "Frequency")
+```
+
+Using ggplot2 method to plot a scatterplot showing relationship between Pre-school Density and Pre-school Count:
+
+```{r}
+ggplot(mpsz3414, aes(x=as.numeric(`PreSch Density`), y=as.numeric(`PreSch Count`))) + 
+    geom_point()
+```
+
+# Part 2
+
+## Getting Started
+
+```{r}
+pacman::p_load(sf, tmap, tidyverse)
+```
+
+## Importing Geospatial Data
+
+```{r}
+mpsz <- st_read(dsn = "data/geospatial", layer = "MP14_SUBZONE_WEB_PL")
+```
+
+### Importing Attribute Data
+
+```{r}
+popdata <- read_csv("data/aspatial/respopagesextod2011to2020.csv")
+```
+
+### Data Preparation
+
+Before a thematic map can be prepared, you are required to prepare a data table with year 2020 values. The data table should include the variables PA, SZ, YOUNG, ECONOMY ACTIVE, AGED, TOTAL, DEPENDENCY.
+
+-   YOUNG: age group 0 to 4 until age groyup 20 to 24,
+
+-   ECONOMY ACTIVE: age group 25-29 until age group 60-64,
+
+-   AGED: age group 65 and above,
+
+-   TOTAL: all age group, and
+
+-   DEPENDENCY: the ratio between young and aged against economy active group
+
+#### Data Wrangling
+
+```{r}
+popdata2020 <- popdata %>%
+  filter(Time == 2020) %>%
+  group_by(PA, SZ, AG) %>%
+  summarise(`POP` = sum(`Pop`)) %>%
+  ungroup()%>%
+  pivot_wider(names_from=AG, 
+              values_from=POP) %>%
+  mutate(YOUNG = rowSums(.[3:6])
+         +rowSums(.[12])) %>%
+mutate(`ECONOMY ACTIVE` = rowSums(.[7:11])+
+rowSums(.[13:15]))%>%
+mutate(`AGED`=rowSums(.[16:21])) %>%
+mutate(`TOTAL`=rowSums(.[3:21])) %>%  
+mutate(`DEPENDENCY` = (`YOUNG` + `AGED`)
+/`ECONOMY ACTIVE`) %>%
+  select(`PA`, `SZ`, `YOUNG`, 
+       `ECONOMY ACTIVE`, `AGED`, 
+       `TOTAL`, `DEPENDENCY`)
+```
+
+#### Joining attribute data and geospatial data
+
+```{r}
+popdata2020 <- popdata2020 %>%
+  mutate_at(.vars = vars(PA, SZ), 
+          .funs = funs(toupper)) %>%
+  filter(`ECONOMY ACTIVE` > 0)
+```
+
+```{r}
+mpsz_pop2020 <- left_join(mpsz, popdata2020,
+                          by = c("SUBZONE_N" = "SZ"))
+```
+
+Note: *left_join()* of **dplyr** package is used with `mpsz` simple feature data frame as the left data table is to ensure that the output will be a simple features data frame.
+
+```{r}
+write_rds(mpsz_pop2020, "data/rds/mpszpop2020.rds")
+```
+
+## Choropleth Mapping Geospatial Data Using *tmap*
+
+### Plot using qtm()
+
+This is the easiest and quickest way to draw a choropleth map.
+
+```{r}
+tmap_mode("plot")
+qtm(mpsz_pop2020, 
+    fill = "DEPENDENCY")
+```
+
+Things to learn from the code chunk above:
+
+-   *tmap_mode()* with \"plot\" option is used to produce a static map. For interactive mode, \"view\" option should be used.
+
+-   *fill* argument is used to map the attribute (i.e. DEPENDENCY)
+
+### 
+Plot using tmap's elements
+
+This way of plotting allow us to draw a high quality cartographic choropleth map, which allows aesthetics of individual layers to be controlled. **tmap's drawing elements should be used.**
+
+```{r}
+tm_shape(mpsz_pop2020)+
+  tm_fill("DEPENDENCY", 
+          style = "quantile", 
+          palette = "Blues",
+          title = "Dependency ratio") +
+  tm_layout(main.title = "Distribution of Dependency Ratio by planning subzone",
+            main.title.position = "center",
+            main.title.size = 1.2,
+            legend.height = 0.45, 
+            legend.width = 0.35,
+            frame = TRUE) +
+  tm_borders(alpha = 0.5) +
+  tm_compass(type="8star", size = 2) +
+  tm_scale_bar() +
+  tm_grid(alpha =0.2) +
+  tm_credits("Source: Planning Sub-zone boundary from Urban Redevelopment Authorithy (URA)\n and Population data from Department of Statistics DOS", 
+             position = c("left", "bottom"))
+```
+
+### Data classification methods of tmap
+
+**tmap** provides a total ten data classification methods, namely: *fixed*, *sd*, *equal*, *pretty* (default), *quantile*, *kmeans*, *hclust*, *bclust*, *fisher*, and *jenks*.
