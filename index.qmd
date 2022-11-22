@@ -2,4 +2,4 @@
 title: "ISSS624"
 ---
 
-This is for the submission of work for ISSS624 Applied Geospatial Analytics.
+This is for the submission of work for ISSS624 Applied Geospatial Analytics, as well as the documentation of my own notes for future reference.

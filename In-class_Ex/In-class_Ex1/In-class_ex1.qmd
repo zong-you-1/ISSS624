@@ -1,0 +1,138 @@
+---
+title: "In-class Exercise"
+editor: visual
+---
+
+# Recap of Hands-On Exercise
+
+## Getting Started
+
+***p_load*** function of **pacman** package is used to install and load sf and tidyverse packages into R environment.
+
+```{r}
+pacman::p_load(sf, tidyverse)
+```
+
+## Importing Geospatial Data
+
+### Importing polygon feature data
+
+***st_read()*** function of **sf** package imports ESRI shapefile into R as a polygon feature data frame.
+
+**sf stands for Simple Features.**
+
+Note that **dsn** defines the data path, and **layer** is the shapefile name.
+
+Note that no extension such as .shp, .dbf, .prj and .shx are needed.
+
+```{r}
+mpsz <- st_read(dsn = "data/geospatial", layer = "MP14_SUBZONE_WEB_PL")
+```
+
+### Importing and transforming into projected coordinates system
+
+Using piping %\>% to perform two actions at one go.
+
+```{r}
+preschool <- st_read("data/geospatial/pre-schools-location-kml.kml") %>%
+  st_transform(crs=3414)
+```
+
+```{r}
+st_geometry(preschool)
+```
+
+# Start of In-class Exercise
+
+```{r}
+pacman::p_load(sf, tidyverse, spdep, tmap)
+```
+
+## Getting the data
+
+```{r}
+hunan_sf <- st_read(dsn = "data/geospatial", layer = "Hunan")
+```
+
+### Importing attribute data in csv
+
+```{r}
+hunan2012 <- read_csv("data/aspatial/Hunan_2012.csv")
+```
+
+### Perform partial join
+
+```{r}
+hunan <- left_join(hunan_sf,hunan2012)
+```
+
+## Visualising Regional Development Indicator
+
+Using ***qtm()*** of **tmap** package, we can plot a basemap and a choropleth map.
+
+```{r}
+basemap <- tm_shape(hunan) +
+  tm_polygons() +
+  tm_text("NAME_3", size=0.5)
+
+gdppc <- qtm(hunan, "GDPPC")
+tmap_arrange(basemap, gdppc, asp=1, ncol=2)
+```
+
+## Computing Contiguity Spatial Weights using poly2nb()
+
+We use ***poly2nb()*** of **spdep** package to compute contiguity weight matrices for the study area. This function builds a neighbours list based on regions with contiguous boundaries.
+
+Note that the default is queen = TRUE.
+
+### Computing (QUEEN) contiguity based neighbours
+
+```{r}
+wm_q <- poly2nb(hunan, queen=TRUE)
+summary(wm_q)
+```
+
+The summary report above shows that there are 88 area units in Hunan. The most connected area unit has 11 neighbours. There are two area units with only one heighbours.
+
+We can find the neighbouring polygons for the first polygon in the object using the following code chunk:
+
+```{r}
+wm_q[[1]]
+```
+
+To retrieve county name, use the following code chunk:
+
+```{r}
+hunan$County[1]
+```
+
+To reveal the county names of the five neighbouring polygons of Anxiang:
+
+```{r}
+hunan$NAME_3[c(2,3,4,57,85)]
+# nb1 <- wm_q[[1]]
+# hunan$NAME_3[nb1]
+```
+
+To retrieve GDPPC of these five countries:
+
+```{r}
+nb1 <- wm_q[[1]]
+nb1 <- hunan$GDPPC[nb1]
+nb1
+```
+
+To display the complete weight matrix:
+
+```{r}
+str(wm_q)
+```
+
+### Computing (ROOK) contiguity based neighbours
+
+```{r}
+wm_r <- poly2nb(hunan, queen=FALSE)
+summary(wm_r)
+```
+
+### Visualising contiguity weights 3.5.3

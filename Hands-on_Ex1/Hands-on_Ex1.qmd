@@ -376,11 +376,12 @@ qtm(mpsz_pop2020,
 
 Things to learn from the code chunk above:
 
--   *tmap_mode()* with \"plot\" option is used to produce a static map. For interactive mode, \"view\" option should be used.
+-   *tmap_mode()* with "plot" option is used to produce a static map. For interactive mode, "view" option should be used.
 
 -   *fill* argument is used to map the attribute (i.e. DEPENDENCY)
 
 ### 
+
 Plot using tmap's elements
 
 This way of plotting allow us to draw a high quality cartographic choropleth map, which allows aesthetics of individual layers to be controlled. **tmap's drawing elements should be used.**
