@@ -19,14 +19,14 @@ In this case study, we are interested to examine the spatial pattern of a select
 pacman::p_load(sf, spdep, tmap, tidyverse)
 ```
 
-### 2.2 Import shapefile 
+### 2.2 Import shapefile
 
 ```{r}
 hunan <- st_read(dsn = "data/geospatial", 
                  layer = "Hunan")
 ```
 
-### 2.3 Import csv file 
+### 2.3 Import csv file
 
 ```{r}
 hunan2012 <- read_csv("data/aspatial/Hunan_2012.csv")
@@ -84,7 +84,7 @@ rswm_q
 
 The input of *nb2listw()* must be an object of class **nb**. The syntax of the function has two major arguments, namely style and zero.poly.
 
--   *style* can take values \"W\", \"B\", \"C\", \"U\", \"minmax\" and \"S\". B is the basic binary coding, W is row standardised (sums over all links to n), C is globally standardised (sums over all links to n), U is equal to C divided by the number of neighbours (sums over all links to unity), while S is the variance-stabilizing coding scheme proposed by Tiefelsdorf et al. 1999, p. 167-168 (sums over all links to n).
+-   *style* can take values "W", "B", "C", "U", "minmax" and "S". B is the basic binary coding, W is row standardised (sums over all links to n), C is globally standardised (sums over all links to n), U is equal to C divided by the number of neighbours (sums over all links to unity), while S is the variance-stabilizing coding scheme proposed by Tiefelsdorf et al. 1999, p. 167-168 (sums over all links to n).
 
 -   If *zero policy* is set to TRUE, weights vectors of zero length are inserted for regions without neighbour in the neighbours list. These will in turn generate lag values of zero, equivalent to the sum of products of the zero row t(rep(0, length=length(neighbours))) %\*% x, for arbitrary numerical vector x of length length(neighbours). The spatially lagged value of x for the zero-neighbour region will then be zero, which may (or may not) be a sensible choice.
 
@@ -221,7 +221,7 @@ head(localMI)
 
 *localmoran()* function returns a matrix of values whose columns are:
 
--   Ii: the local Moran\'s I statistics
+-   Ii: the local Moran's I statistics
 
 -   E.Ii: the expectation of local moran statistic under the randomisation hypothesis
 
@@ -395,6 +395,7 @@ The analysis consists of three steps:
 -   Mapping Gi statistics
 
 ### 
+
 7.2 Deriving distance-based weight matrix
 
 #### Deriving the centroid
@@ -450,7 +451,7 @@ gi.fixed <- localG(hunan$GDPPC, wm62_lw)
 gi.fixed
 ```
 
-The output of localG() is a vector of G or Gstar values, with attributes \"gstari\" set to TRUE or FALSE, \"call\" set to the function call, and class \"localG\".
+The output of localG() is a vector of G or Gstar values, with attributes "gstari" set to TRUE or FALSE, "call" set to the function call, and class "localG".
 
 The Gi statistics is represented as a Z-score. Greater values represent a greater intensity of clustering and the direction (positive or negative) indicates high or low clusters.
 

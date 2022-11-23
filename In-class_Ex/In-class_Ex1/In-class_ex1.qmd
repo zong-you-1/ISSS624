@@ -135,7 +135,7 @@ wm_r <- poly2nb(hunan, queen=FALSE)
 summary(wm_r)
 ```
 
-### Visualising contiguity weights 
+### Visualising contiguity weights
 
 Compute longitude and latitude, and combine to form the coordinates.
 
@@ -273,7 +273,7 @@ rswm_q <- nb2listw(wm_q, style="W", zero.policy = TRUE)
 rswm_q
 ```
 
-To see the weight of the first polygon\'s four neighbors type:
+To see the weight of the first polygon's four neighbors type:
 
 ```{r}
 rswm_q$weights[10]
