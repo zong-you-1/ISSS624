@@ -17,7 +17,7 @@ In this hands-on exercise, I learn how to
 
 # Part 1
 
-## Getting Started
+## 1 Getting Started
 
 ***p_load*** function of **pacman** package is used to install and load sf and tidyverse packages into R environment.
 
@@ -25,9 +25,9 @@ In this hands-on exercise, I learn how to
 pacman::p_load(sf, tidyverse)
 ```
 
-## Importing Geospatial Data
+## 2 Importing Geospatial Data
 
-### Importing polygon feature data
+### 2.1 Importing polygon feature data
 
 ***st_read()*** function of **sf** package imports shapefile into R as a polygon feature data frame.
 
@@ -47,7 +47,7 @@ cyclingpath <- st_read(dsn = "data/geospatial", layer = "CyclingPath")
 
 Note that **CyclingPath** is ***multilinestring***.
 
-### Importing GIS data in kml format
+### 2.2 Importing GIS data in kml format
 
 Note that complete path and kml file extension were provided.
 
@@ -59,9 +59,9 @@ Note that **preschool** is ***point*** feature data frame.
 
 [**Guide says preschool is in wgs84 coordinates system, but mine is already SVY21**]{.underline}
 
-## Checking Content of A Simple Feature Data Frame
+## 3 Checking Content of A Simple Feature Data Frame
 
-### Working with *st_geometry()*
+### 3.1 Working with *st_geometry()*
 
 ***st_geometry()*** displays basic information of the feature class such as type of geometry, the geographic extent of the features and the coordinate system of the data.
 
@@ -69,7 +69,7 @@ Note that **preschool** is ***point*** feature data frame.
 st_geometry(mpsz)
 ```
 
-### Working with *glimpse()*
+### 3.2 Working with *glimpse()*
 
 ***glimpse()*** provides more information about the associated attribute information in the data frame. It reveals the data type of each fields.
 
@@ -77,7 +77,7 @@ st_geometry(mpsz)
 glimpse(mpsz)
 ```
 
-### Working with *head()*
+### 3.3 Working with *head()*
 
 ***head()*** is the Base R function to reveal complete information of a feature object.
 
@@ -85,7 +85,7 @@ glimpse(mpsz)
 head(mpsz, n=5)
 ```
 
-## Plotting the Geospatial Data
+## 4 Plotting the Geospatial Data
 
 ***plot()*** of R Graphic is used to visualise geospatial features.
 
@@ -105,13 +105,13 @@ We can also choose to plot the sf object by using a specific attribute as shown 
 plot(mpsz["PLN_AREA_N"])
 ```
 
-## Working with Projection
+## 5 Working with Projection
 
 We need to ensure that geospatial data are projected using similar coordinate system, and this is where map projection comes in.
 
 The technical term of the process to project a simple feature data frame from one coordinate system to another is called **projection transformation**.
 
-### Assigning EPSG code to a simple feature data frame
+### 5.1 Assigning EPSG code to a simple feature data frame
 
 One of the common issue that can happen during importing geospatial data into R is that the coordinate system of the source data was either missing (such as due to missing .proj for ESRI shapefile) or wrongly assigned during the importing process.
 
@@ -131,7 +131,7 @@ mpsz3414 <- st_set_crs(mpsz,3414)
 st_crs(mpsz3414)
 ```
 
-### Transforming projection of preschool from wgs84 to svy21
+### 5.2 Transforming projection of preschool from wgs84 to svy21
 
 If we need to reproject a feature data frame from one geographic coordinate system to another, we need to use ***st_transform()***.
 
@@ -139,11 +139,11 @@ If we need to reproject a feature data frame from one geographic coordinate syst
 preschool3414 <- st_transform(preschool, crs = 3414)
 ```
 
-## Importing and Converting Aspatial Data
+## 6 Importing and Converting Aspatial Data
 
 Aspatial data is not a geospatial data, but contains two fields that capture the x- and y- coordinates of the data points.
 
-### Importing and inspecting aspatial data
+### 6.1 Importing and inspecting aspatial data
 
 ```{r}
 listings <- read_csv("data/aspatial/listings.csv")
@@ -153,7 +153,7 @@ listings <- read_csv("data/aspatial/listings.csv")
 list(listings) 
 ```
 
-### Creating a simple feature data frame from aspatial data frame
+### 6.2 Creating a simple feature data frame from aspatial data frame
 
 ***st_as_sf()*** converts data frame to simple feature data frame.
 
@@ -176,9 +176,9 @@ By inspecting **listings_sf** below, note that a new column **geometry** has bee
 glimpse(listings_sf)
 ```
 
-## Geoprocessing with sf package
+## 7 Geoprocessing with sf package
 
-### Buffering
+### 7.1 Buffering
 
 Scenario:
 
@@ -204,7 +204,7 @@ Lastly, use ***sum()*** to derive the total land involved.
 sum(buffer_cycling$AREA)
 ```
 
-### Point-in-polygon count
+### 7.2 Point-in-polygon count
 
 Scenario:
 
@@ -256,7 +256,7 @@ List planning subzone with the highest density:
 top_n(mpsz3414, 1, `PreSch Density`)
 ```
 
-## Exploratory Data Analysis (EDA)
+## 8 Exploratory Data Analysis (EDA)
 
 Histogram to reveal the distribution of PreSch Density using ***hist()*** of R Graphics:
 
@@ -287,25 +287,25 @@ ggplot(mpsz3414, aes(x=as.numeric(`PreSch Density`), y=as.numeric(`PreSch Count`
 
 # Part 2
 
-## Getting Started
+## 1 Getting Started
 
 ```{r}
 pacman::p_load(sf, tmap, tidyverse)
 ```
 
-## Importing Geospatial Data
+## 2 Importing Geospatial Data
 
 ```{r}
 mpsz <- st_read(dsn = "data/geospatial", layer = "MP14_SUBZONE_WEB_PL")
 ```
 
-### Importing Attribute Data
+### 2.1 Importing Attribute Data
 
 ```{r}
 popdata <- read_csv("data/aspatial/respopagesextod2011to2020.csv")
 ```
 
-### Data Preparation
+### 2.2 Data Preparation
 
 Before a thematic map can be prepared, you are required to prepare a data table with year 2020 values. The data table should include the variables PA, SZ, YOUNG, ECONOMY ACTIVE, AGED, TOTAL, DEPENDENCY.
 
@@ -362,9 +362,9 @@ Note: *left_join()* of **dplyr** package is used with `mpsz` simple feature data
 write_rds(mpsz_pop2020, "data/rds/mpszpop2020.rds")
 ```
 
-## Choropleth Mapping Geospatial Data Using *tmap*
+## 3 Choropleth Mapping Geospatial Data Using *tmap*
 
-### Plot using qtm()
+### 3.1 Plot using qtm()
 
 This is the easiest and quickest way to draw a choropleth map.
 
@@ -406,6 +406,6 @@ tm_shape(mpsz_pop2020)+
              position = c("left", "bottom"))
 ```
 
-### Data classification methods of tmap
+### 3.2 Data classification methods of tmap
 
 **tmap** provides a total ten data classification methods, namely: *fixed*, *sd*, *equal*, *pretty* (default), *quantile*, *kmeans*, *hclust*, *bclust*, *fisher*, and *jenks*.

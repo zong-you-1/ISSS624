@@ -3,7 +3,7 @@ title: "In-class Exercise 2"
 editor: visual
 ---
 
-## Getting Started
+## 1 .Getting Started
 
 ***p_load*** function of **pacman** package is used to install and load the required packages into R environment.
 
@@ -11,9 +11,9 @@ editor: visual
 pacman::p_load(sf, tidyverse, tmap, spdep, funModeling)
 ```
 
-## Importing Geospatial Data
+## 2. Importing Geospatial Data
 
-### Importing water point geospatial data
+### 2.1 Importing water point geospatial data
 
 Note that CRS = 4326 is used here, instead of Nigeria's 26391, 26392, and 26303.
 
@@ -36,7 +36,7 @@ To create a sub-set data, so that we do not need to keep calling the full file.
 wp_nga <- write_rds(wp, "data/wp_nga.rds")
 ```
 
-### Importing Nigeria Level-2 Administrative Boundary
+### 2.2 Importing Nigeria Level-2 Administrative Boundary
 
 ```{r}
 #| eval: false
@@ -45,7 +45,7 @@ nga_LGA <- st_read(dsn = "data/geoBoundaries-NGA-ADM2-all",
                    crs = 4326)
 ```
 
-## Data Wrangling
+## 3 Data Wrangling
 
 From the graph below, there are more than 10,000 records with **status_cle** = NA.
 
@@ -71,9 +71,9 @@ freq(data = wp_nga,
      input = "status_cle")
 ```
 
-## Extracting Water Point Data
+## 4 Extracting Water Point Data
 
-### Extracting functional water point
+### 4.1 Extracting functional water point
 
 ```{r}
 #| eval: false
@@ -86,7 +86,7 @@ wpt_functional <- (wp_nga %>%
                    )
 ```
 
-### Extracting non-functional water point
+### 4.2 Extracting non-functional water point
 
 ```{r}
 #| eval: false
@@ -101,7 +101,7 @@ wpt_nonfunctional <- (wp_nga %>%
                    )
 ```
 
-### Extracting water point with Unknown class
+### 4.3 Extracting water point with Unknown class
 
 ```{r}
 #| eval: false
@@ -110,7 +110,7 @@ wpt_unknown <- (wp_nga %>%
                 )
 ```
 
-## Performing Point-in-Polygon Count
+## 5 Performing Point-in-Polygon Count
 
 ```{r}
 #| eval: false
@@ -121,7 +121,7 @@ nga_wp <- nga_LGA %>%
   mutate(`wpt unknown` = lengths(st_intersects(nga_LGA, wpt_unknown)))
 ```
 
-## Saving the Analytical Data Table
+## 6 Saving the Analytical Data Table
 
 ```{r}
 #| eval: false
@@ -135,7 +135,7 @@ nga_wp <- nga_wp %>%
 write_rds(nga_wp, "data/nga_wp.rds")
 ```
 
-## Visualising the spatial distribution of water points
+## 7 Visualising the spatial distribution of water points
 
 ```{r}
 nga_wp <- read_rds("data/nga_wp.rds")
