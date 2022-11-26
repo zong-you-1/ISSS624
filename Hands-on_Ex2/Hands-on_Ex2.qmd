@@ -99,7 +99,7 @@ moran.test(hunan$GDPPC,
            na.action=na.omit)
 ```
 
-Since p\<0.05, we reject null hypothesis at 5% significance level.
+Since p\<0.05, we reject null hypothesis at 5% significance level. Since Moran I statistic is positive (\>0), this means that observations tend to be similar i.e. clustered.
 
 #### Computing Monte Carlo Moran's I
 
@@ -115,7 +115,7 @@ bperm= moran.mc(hunan$GDPPC,
 bperm
 ```
 
-Since p\<0.05, we reject null hypothesis at 5% significance level.
+Since p\<0.05, we reject null hypothesis at 5% significance level. Since Moran I statistic is positive (\>0), this means that observations tend to be similar i.e. clustered.
 
 #### Visualising Monte Carlo Moran's I
 
@@ -144,7 +144,7 @@ geary.test(hunan$GDPPC, listw=rswm_q)
 
 ![](data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACgAAAAaCAYAAADFTB7LAAAAa0lEQVR42u3OywnAIBBAwcXSUoCW5D11xDoNCBGNv0MOecJOBSOi1OZMsJ4dvFxEJ1OQnMxBarIKEpNNkJbsBknJYZCSnAYJyVVQziNig7/nZkFEbhTE5HpBVO4dxOXKIDL3BLG5BJ1T6rsbMfep2CaMN00AAAAASUVORK5CYII= "Run Current Chunk")
 
-Since p\<0.05, we reject null hypothesis at 5% significance level.
+Since p\<0.05, we reject null hypothesis at 5% significance level. Since Geary C statistic is small (\<1), this means that observations tend to be similar i.e. clustered.
 
 #### Computing Monte Carlo Geary's C
 
@@ -158,7 +158,7 @@ bperm=geary.mc(hunan$GDPPC,
 bperm
 ```
 
-Since p\<0.05, we reject null hypothesis at 5% significance level.
+Since p\<0.05, we reject null hypothesis at 5% significance level. Since Geary C statistic is small (\<1), this means that observations tend to be similar i.e. clustered.
 
 #### Visualising Monte Carlo Geary's C
 

@@ -191,22 +191,22 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
     <h2 id="toc-title">On this page</h2>
    
   <ul>
-  <li><a href="#getting-started" id="toc-getting-started" class="nav-link active" data-scroll-target="#getting-started">Getting Started</a></li>
-  <li><a href="#importing-geospatial-data" id="toc-importing-geospatial-data" class="nav-link" data-scroll-target="#importing-geospatial-data">Importing Geospatial Data</a>
+  <li><a href="#getting-started" id="toc-getting-started" class="nav-link active" data-scroll-target="#getting-started">1 .Getting Started</a></li>
+  <li><a href="#importing-geospatial-data" id="toc-importing-geospatial-data" class="nav-link" data-scroll-target="#importing-geospatial-data">2. Importing Geospatial Data</a>
   <ul class="collapse">
-  <li><a href="#importing-water-point-geospatial-data" id="toc-importing-water-point-geospatial-data" class="nav-link" data-scroll-target="#importing-water-point-geospatial-data">Importing water point geospatial data</a></li>
-  <li><a href="#importing-nigeria-level-2-administrative-boundary" id="toc-importing-nigeria-level-2-administrative-boundary" class="nav-link" data-scroll-target="#importing-nigeria-level-2-administrative-boundary">Importing Nigeria Level-2 Administrative Boundary</a></li>
+  <li><a href="#importing-water-point-geospatial-data" id="toc-importing-water-point-geospatial-data" class="nav-link" data-scroll-target="#importing-water-point-geospatial-data">2.1 Importing water point geospatial data</a></li>
+  <li><a href="#importing-nigeria-level-2-administrative-boundary" id="toc-importing-nigeria-level-2-administrative-boundary" class="nav-link" data-scroll-target="#importing-nigeria-level-2-administrative-boundary">2.2 Importing Nigeria Level-2 Administrative Boundary</a></li>
   </ul></li>
-  <li><a href="#data-wrangling" id="toc-data-wrangling" class="nav-link" data-scroll-target="#data-wrangling">Data Wrangling</a></li>
-  <li><a href="#extracting-water-point-data" id="toc-extracting-water-point-data" class="nav-link" data-scroll-target="#extracting-water-point-data">Extracting Water Point Data</a>
+  <li><a href="#data-wrangling" id="toc-data-wrangling" class="nav-link" data-scroll-target="#data-wrangling">3 Data Wrangling</a></li>
+  <li><a href="#extracting-water-point-data" id="toc-extracting-water-point-data" class="nav-link" data-scroll-target="#extracting-water-point-data">4 Extracting Water Point Data</a>
   <ul class="collapse">
-  <li><a href="#extracting-functional-water-point" id="toc-extracting-functional-water-point" class="nav-link" data-scroll-target="#extracting-functional-water-point">Extracting functional water point</a></li>
-  <li><a href="#extracting-non-functional-water-point" id="toc-extracting-non-functional-water-point" class="nav-link" data-scroll-target="#extracting-non-functional-water-point">Extracting non-functional water point</a></li>
-  <li><a href="#extracting-water-point-with-unknown-class" id="toc-extracting-water-point-with-unknown-class" class="nav-link" data-scroll-target="#extracting-water-point-with-unknown-class">Extracting water point with Unknown class</a></li>
+  <li><a href="#extracting-functional-water-point" id="toc-extracting-functional-water-point" class="nav-link" data-scroll-target="#extracting-functional-water-point">4.1 Extracting functional water point</a></li>
+  <li><a href="#extracting-non-functional-water-point" id="toc-extracting-non-functional-water-point" class="nav-link" data-scroll-target="#extracting-non-functional-water-point">4.2 Extracting non-functional water point</a></li>
+  <li><a href="#extracting-water-point-with-unknown-class" id="toc-extracting-water-point-with-unknown-class" class="nav-link" data-scroll-target="#extracting-water-point-with-unknown-class">4.3 Extracting water point with Unknown class</a></li>
   </ul></li>
-  <li><a href="#performing-point-in-polygon-count" id="toc-performing-point-in-polygon-count" class="nav-link" data-scroll-target="#performing-point-in-polygon-count">Performing Point-in-Polygon Count</a></li>
-  <li><a href="#saving-the-analytical-data-table" id="toc-saving-the-analytical-data-table" class="nav-link" data-scroll-target="#saving-the-analytical-data-table">Saving the Analytical Data Table</a></li>
-  <li><a href="#visualising-the-spatial-distribution-of-water-points" id="toc-visualising-the-spatial-distribution-of-water-points" class="nav-link" data-scroll-target="#visualising-the-spatial-distribution-of-water-points">Visualising the spatial distribution of water points</a></li>
+  <li><a href="#performing-point-in-polygon-count" id="toc-performing-point-in-polygon-count" class="nav-link" data-scroll-target="#performing-point-in-polygon-count">5 Performing Point-in-Polygon Count</a></li>
+  <li><a href="#saving-the-analytical-data-table" id="toc-saving-the-analytical-data-table" class="nav-link" data-scroll-target="#saving-the-analytical-data-table">6 Saving the Analytical Data Table</a></li>
+  <li><a href="#visualising-the-spatial-distribution-of-water-points" id="toc-visualising-the-spatial-distribution-of-water-points" class="nav-link" data-scroll-target="#visualising-the-spatial-distribution-of-water-points">7 Visualising the spatial distribution of water points</a></li>
   </ul>
 </nav>
     </div>
@@ -230,16 +230,16 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </header>
 
 <section id="getting-started" class="level2">
-<h2 class="anchored" data-anchor-id="getting-started">Getting Started</h2>
+<h2 class="anchored" data-anchor-id="getting-started">1 .Getting Started</h2>
 <p><strong><em>p_load</em></strong> function of <strong>pacman</strong> package is used to install and load the required packages into R environment.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>pacman<span class="sc">::</span><span class="fu">p_load</span>(sf, tidyverse, tmap, spdep, funModeling)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
 <section id="importing-geospatial-data" class="level2">
-<h2 class="anchored" data-anchor-id="importing-geospatial-data">Importing Geospatial Data</h2>
+<h2 class="anchored" data-anchor-id="importing-geospatial-data">2. Importing Geospatial Data</h2>
 <section id="importing-water-point-geospatial-data" class="level3">
-<h3 class="anchored" data-anchor-id="importing-water-point-geospatial-data">Importing water point geospatial data</h3>
+<h3 class="anchored" data-anchor-id="importing-water-point-geospatial-data">2.1 Importing water point geospatial data</h3>
 <p>Note that CRS = 4326 is used here, instead of Nigeria’s 26391, 26392, and 26303.</p>
 <p>4326 is for WGS84, which is the coordinate system for the original data.</p>
 <p><strong><em>st_transform()</em></strong> is not used here as there will be issues faced, and we will convert the coordinates later after data wrangling.</p>
@@ -255,7 +255,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </div>
 </section>
 <section id="importing-nigeria-level-2-administrative-boundary" class="level3">
-<h3 class="anchored" data-anchor-id="importing-nigeria-level-2-administrative-boundary">Importing Nigeria Level-2 Administrative Boundary</h3>
+<h3 class="anchored" data-anchor-id="importing-nigeria-level-2-administrative-boundary">2.2 Importing Nigeria Level-2 Administrative Boundary</h3>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>nga_LGA <span class="ot">&lt;-</span> <span class="fu">st_read</span>(<span class="at">dsn =</span> <span class="st">"data/geoBoundaries-NGA-ADM2-all"</span>,</span>
 <span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>                   <span class="at">layer =</span> <span class="st">"geoBoundaries-NGA-ADM2"</span>,</span>
@@ -264,7 +264,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </section>
 </section>
 <section id="data-wrangling" class="level2">
-<h2 class="anchored" data-anchor-id="data-wrangling">Data Wrangling</h2>
+<h2 class="anchored" data-anchor-id="data-wrangling">3 Data Wrangling</h2>
 <p>From the graph below, there are more than 10,000 records with <strong>status_cle</strong> = NA.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">freq</span>(<span class="at">data =</span> wp_nga,</span>
@@ -282,9 +282,9 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </div>
 </section>
 <section id="extracting-water-point-data" class="level2">
-<h2 class="anchored" data-anchor-id="extracting-water-point-data">Extracting Water Point Data</h2>
+<h2 class="anchored" data-anchor-id="extracting-water-point-data">4 Extracting Water Point Data</h2>
 <section id="extracting-functional-water-point" class="level3">
-<h3 class="anchored" data-anchor-id="extracting-functional-water-point">Extracting functional water point</h3>
+<h3 class="anchored" data-anchor-id="extracting-functional-water-point">4.1 Extracting functional water point</h3>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>wpt_functional <span class="ot">&lt;-</span> (wp_nga <span class="sc">%&gt;%</span></span>
 <span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>                     <span class="fu">filter</span>(status_cle <span class="sc">%in%</span></span>
@@ -296,7 +296,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </div>
 </section>
 <section id="extracting-non-functional-water-point" class="level3">
-<h3 class="anchored" data-anchor-id="extracting-non-functional-water-point">Extracting non-functional water point</h3>
+<h3 class="anchored" data-anchor-id="extracting-non-functional-water-point">4.2 Extracting non-functional water point</h3>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>wpt_nonfunctional <span class="ot">&lt;-</span> (wp_nga <span class="sc">%&gt;%</span></span>
 <span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>                     <span class="fu">filter</span>(status_cle <span class="sc">%in%</span></span>
@@ -310,7 +310,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </div>
 </section>
 <section id="extracting-water-point-with-unknown-class" class="level3">
-<h3 class="anchored" data-anchor-id="extracting-water-point-with-unknown-class">Extracting water point with Unknown class</h3>
+<h3 class="anchored" data-anchor-id="extracting-water-point-with-unknown-class">4.3 Extracting water point with Unknown class</h3>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>wpt_unknown <span class="ot">&lt;-</span> (wp_nga <span class="sc">%&gt;%</span></span>
 <span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>                     <span class="fu">filter</span>(status_cle <span class="sc">==</span> <span class="st">"Unknown"</span>)</span>
@@ -319,7 +319,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </section>
 </section>
 <section id="performing-point-in-polygon-count" class="level2">
-<h2 class="anchored" data-anchor-id="performing-point-in-polygon-count">Performing Point-in-Polygon Count</h2>
+<h2 class="anchored" data-anchor-id="performing-point-in-polygon-count">5 Performing Point-in-Polygon Count</h2>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>nga_wp <span class="ot">&lt;-</span> nga_LGA <span class="sc">%&gt;%</span> </span>
 <span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="st">`</span><span class="at">total wpt</span><span class="st">`</span> <span class="ot">=</span> <span class="fu">lengths</span>(<span class="fu">st_intersects</span>(nga_LGA, wp_nga))) <span class="sc">%&gt;%</span></span>
@@ -329,7 +329,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </div>
 </section>
 <section id="saving-the-analytical-data-table" class="level2">
-<h2 class="anchored" data-anchor-id="saving-the-analytical-data-table">Saving the Analytical Data Table</h2>
+<h2 class="anchored" data-anchor-id="saving-the-analytical-data-table">6 Saving the Analytical Data Table</h2>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>nga_wp <span class="ot">&lt;-</span> nga_wp <span class="sc">%&gt;%</span></span>
 <span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">pct_functional =</span> <span class="st">`</span><span class="at">wpt functional</span><span class="st">`</span><span class="sc">/</span><span class="st">`</span><span class="at">total wpt</span><span class="st">`</span>) <span class="sc">%&gt;%</span></span>
@@ -340,7 +340,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </div>
 </section>
 <section id="visualising-the-spatial-distribution-of-water-points" class="level2">
-<h2 class="anchored" data-anchor-id="visualising-the-spatial-distribution-of-water-points">Visualising the spatial distribution of water points</h2>
+<h2 class="anchored" data-anchor-id="visualising-the-spatial-distribution-of-water-points">7 Visualising the spatial distribution of water points</h2>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>nga_wp <span class="ot">&lt;-</span> <span class="fu">read_rds</span>(<span class="st">"data/nga_wp.rds"</span>)</span>
 <span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>total <span class="ot">&lt;-</span> <span class="fu">qtm</span>(nga_wp, <span class="st">"total wpt"</span>)</span>

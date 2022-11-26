@@ -411,7 +411,7 @@ Moran I statistic       Expectation          Variance
       0.300749970      -0.011494253       0.004348351 </code></pre>
 </div>
 </div>
-<p>Since p&lt;0.05, we reject null hypothesis at 5% significance level.</p>
+<p>Since p&lt;0.05, we reject null hypothesis at 5% significance level. Since Moran I statistic is positive (&gt;0), this means that observations tend to be similar i.e.&nbsp;clustered.</p>
 <section id="computing-monte-carlo-morans-i" class="level4">
 <h4 class="anchored" data-anchor-id="computing-monte-carlo-morans-i">Computing Monte Carlo Moran’s I</h4>
 <p>We use <strong><em>moran.mc()</em></strong> of <strong>spdep</strong> to perform permutation test for Moran’s I statistic (1000 simulations).</p>
@@ -435,7 +435,7 @@ statistic = 0.30075, observed rank = 1000, p-value = 0.001
 alternative hypothesis: greater</code></pre>
 </div>
 </div>
-<p>Since p&lt;0.05, we reject null hypothesis at 5% significance level.</p>
+<p>Since p&lt;0.05, we reject null hypothesis at 5% significance level. Since Moran I statistic is positive (&gt;0), this means that observations tend to be similar i.e.&nbsp;clustered.</p>
 </section>
 <section id="visualising-monte-carlo-morans-i" class="level4">
 <h4 class="anchored" data-anchor-id="visualising-monte-carlo-morans-i">Visualising Monte Carlo Moran’s I</h4>
@@ -487,7 +487,7 @@ Geary C statistic       Expectation          Variance
 </div>
 </div>
 <p><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACgAAAAaCAYAAADFTB7LAAAAa0lEQVR42u3OywnAIBBAwcXSUoCW5D11xDoNCBGNv0MOecJOBSOi1OZMsJ4dvFxEJ1OQnMxBarIKEpNNkJbsBknJYZCSnAYJyVVQziNig7/nZkFEbhTE5HpBVO4dxOXKIDL3BLG5BJ1T6rsbMfep2CaMN00AAAAASUVORK5CYII=.png" title="Run Current Chunk" class="img-fluid"></p>
-<p>Since p&lt;0.05, we reject null hypothesis at 5% significance level.</p>
+<p>Since p&lt;0.05, we reject null hypothesis at 5% significance level. Since Geary C statistic is small (&lt;1), this means that observations tend to be similar i.e.&nbsp;clustered.</p>
 <section id="computing-monte-carlo-gearys-c" class="level4">
 <h4 class="anchored" data-anchor-id="computing-monte-carlo-gearys-c">Computing Monte Carlo Geary’s C</h4>
 <p>We use <strong><em>geary.mc()</em></strong> of <strong>spdep</strong> to perform permutation test for Geary’s C statistic (1000 simulations).</p>
@@ -509,7 +509,7 @@ statistic = 0.69072, observed rank = 1, p-value = 0.001
 alternative hypothesis: greater</code></pre>
 </div>
 </div>
-<p>Since p&lt;0.05, we reject null hypothesis at 5% significance level.</p>
+<p>Since p&lt;0.05, we reject null hypothesis at 5% significance level. Since Geary C statistic is small (&lt;1), this means that observations tend to be similar i.e.&nbsp;clustered.</p>
 </section>
 <section id="visualising-monte-carlo-gearys-c" class="level4">
 <h4 class="anchored" data-anchor-id="visualising-monte-carlo-gearys-c">Visualising Monte Carlo Geary’s C</h4>
