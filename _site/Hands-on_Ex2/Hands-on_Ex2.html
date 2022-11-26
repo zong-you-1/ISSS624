@@ -162,6 +162,10 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
     <a class="dropdown-item" href="../In-class_Ex/In-class_Ex1/In-class_ex1.html">
  <span class="dropdown-text">In-class Exercise 1</span></a>
   </li>  
+        <li>
+    <a class="dropdown-item" href="../In-class_Ex/In-class_Ex2/In-class_ex2.html">
+ <span class="dropdown-text">In-class Exercise 2</span></a>
+  </li>  
     </ul>
   </li>
 </ul>
@@ -778,6 +782,8 @@ Zixing        -7.6849e-01 -8.8210e-02  9.4057e-01 -7.0144e-01         0.4830</co
 <p><img src="Hands-on_Ex2_files/figure-html/unnamed-chunk-25-1.png" class="img-fluid" width="672"></p>
 </div>
 </div>
+<p><strong><em>From the graph on the left, the orange region represents outlier while the green regions are clusters.</em></strong></p>
+<p><strong><em>However, for the outlier region, as there are only 3 neighbours, it is not statistically significant as shown by the p-value on the right.</em></strong></p>
 </section>
 </section>
 </section>
@@ -829,8 +835,8 @@ Zixing        -7.6849e-01 -8.8210e-02  9.4057e-01 -7.0144e-01         0.4830</co
 <p>Define the high-high, low-low, low-high, and high-low categories:</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb55"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb55-1"><a href="#cb55-1" aria-hidden="true" tabindex="-1"></a>quadrant[DV <span class="sc">&gt;</span><span class="dv">0</span> <span class="sc">&amp;</span> C_mI<span class="sc">&gt;</span><span class="dv">0</span>] <span class="ot">&lt;-</span> <span class="dv">4</span>      </span>
-<span id="cb55-2"><a href="#cb55-2" aria-hidden="true" tabindex="-1"></a>quadrant[DV <span class="sc">&lt;</span><span class="dv">0</span> <span class="sc">&amp;</span> C_mI<span class="sc">&lt;</span><span class="dv">0</span>] <span class="ot">&lt;-</span> <span class="dv">1</span>      </span>
-<span id="cb55-3"><a href="#cb55-3" aria-hidden="true" tabindex="-1"></a>quadrant[DV <span class="sc">&lt;</span><span class="dv">0</span> <span class="sc">&amp;</span> C_mI<span class="sc">&gt;</span><span class="dv">0</span>] <span class="ot">&lt;-</span> <span class="dv">2</span></span>
+<span id="cb55-2"><a href="#cb55-2" aria-hidden="true" tabindex="-1"></a>quadrant[DV <span class="sc">&lt;</span><span class="dv">0</span> <span class="sc">&amp;</span> C_mI<span class="sc">&lt;</span><span class="dv">0</span>] <span class="ot">&lt;-</span> <span class="dv">2</span>      </span>
+<span id="cb55-3"><a href="#cb55-3" aria-hidden="true" tabindex="-1"></a>quadrant[DV <span class="sc">&lt;</span><span class="dv">0</span> <span class="sc">&amp;</span> C_mI<span class="sc">&gt;</span><span class="dv">0</span>] <span class="ot">&lt;-</span> <span class="dv">1</span></span>
 <span id="cb55-4"><a href="#cb55-4" aria-hidden="true" tabindex="-1"></a>quadrant[DV <span class="sc">&gt;</span><span class="dv">0</span> <span class="sc">&amp;</span> C_mI<span class="sc">&lt;</span><span class="dv">0</span>] <span class="ot">&lt;-</span> <span class="dv">3</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>Place non-significant Moran in category 0.</p>

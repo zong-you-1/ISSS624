@@ -1,0 +1,148 @@
+---
+title: "In-class Exercise 2"
+editor: visual
+---
+
+## Getting Started
+
+***p_load*** function of **pacman** package is used to install and load the required packages into R environment.
+
+```{r}
+pacman::p_load(sf, tidyverse, tmap, spdep, funModeling)
+```
+
+## Importing Geospatial Data
+
+### Importing water point geospatial data
+
+Note that CRS = 4326 is used here, instead of Nigeria's 26391, 26392, and 26303.
+
+4326 is for WGS84, which is the coordinate system for the original data.
+
+***st_transform()*** is not used here as there will be issues faced, and we will convert the coordinates later after data wrangling.
+
+```{r}
+#| eval: false
+wp <- st_read(dsn = "data/waterdata",
+              layer = "geo_export",
+              crs = 4326) %>%
+  filter(clean_coun == "Nigeria")
+```
+
+To create a sub-set data, so that we do not need to keep calling the full file.
+
+```{r}
+#| eval: false
+wp_nga <- write_rds(wp, "data/wp_nga.rds")
+```
+
+### Importing Nigeria Level-2 Administrative Boundary
+
+```{r}
+#| eval: false
+nga_LGA <- st_read(dsn = "data/geoBoundaries-NGA-ADM2-all",
+                   layer = "geoBoundaries-NGA-ADM2",
+                   crs = 4326)
+```
+
+## Data Wrangling
+
+From the graph below, there are more than 10,000 records with **status_cle** = NA.
+
+```{r}
+#| eval: false
+freq(data = wp_nga,
+     input = "status_cle")
+```
+
+We will fix that by converting the N/A values to "Unknown".
+
+```{r}
+#| eval: false
+wp_nga <- read_rds("data/wp_nga.rds") %>%
+  mutate(status_cle = replace_na(status_cle, "Unknown"))
+```
+
+Plot the frequency graph again to check that there are no more N/A values.
+
+```{r}
+#| eval: false
+freq(data = wp_nga,
+     input = "status_cle")
+```
+
+## Extracting Water Point Data
+
+### Extracting functional water point
+
+```{r}
+#| eval: false
+wpt_functional <- (wp_nga %>%
+                     filter(status_cle %in%
+                              c("Functional",
+                                "Functional but not in use",
+                                "Functional but needs repair")
+                            )
+                   )
+```
+
+### Extracting non-functional water point
+
+```{r}
+#| eval: false
+wpt_nonfunctional <- (wp_nga %>%
+                     filter(status_cle %in%
+                              c("Abandoned",
+                                "Abandoned/Decommissioned",
+                                "Non functional due to dry season",
+                                "Non-Functional due to dry season",
+                                "Non-Functional")
+                            )
+                   )
+```
+
+### Extracting water point with Unknown class
+
+```{r}
+#| eval: false
+wpt_unknown <- (wp_nga %>%
+                     filter(status_cle == "Unknown")
+                )
+```
+
+## Performing Point-in-Polygon Count
+
+```{r}
+#| eval: false
+nga_wp <- nga_LGA %>% 
+  mutate(`total wpt` = lengths(st_intersects(nga_LGA, wp_nga))) %>%
+  mutate(`wpt functional` = lengths(st_intersects(nga_LGA, wpt_functional))) %>%
+  mutate(`wpt non-functional` = lengths(st_intersects(nga_LGA, wpt_nonfunctional))) %>%
+  mutate(`wpt unknown` = lengths(st_intersects(nga_LGA, wpt_unknown)))
+```
+
+## Saving the Analytical Data Table
+
+```{r}
+#| eval: false
+nga_wp <- nga_wp %>%
+  mutate(pct_functional = `wpt functional`/`total wpt`) %>%
+  mutate(`pct_non-functional` = `wpt non-functional`/`total wpt`)
+```
+
+```{r}
+#| eval: false
+write_rds(nga_wp, "data/nga_wp.rds")
+```
+
+## Visualising the spatial distribution of water points
+
+```{r}
+nga_wp <- read_rds("data/nga_wp.rds")
+total <- qtm(nga_wp, "total wpt")
+wp_functional <- qtm(nga_wp, "wpt functional")
+wp_nonfunctional <- qtm(nga_wp, "wpt non-functional")
+unknown <- qtm(nga_wp, "wpt unknown")
+
+tmap_arrange(total, wp_functional, wp_nonfunctional, unknown, asp=1, ncol=2)
+```

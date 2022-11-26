@@ -281,6 +281,10 @@ pvalue.map <- tm_shape(hunan.localMI) +
 tmap_arrange(localMI.map, pvalue.map, asp=1, ncol=2)
 ```
 
+***From the graph on the left, the orange region represents outlier while the green regions are clusters.***
+
+***However, for the outlier region, as there are only 3 neighbours, it is not statistically significant as shown by the p-value on the right.***
+
 ## 6 Creating a LISA Cluster Map
 
 The LISA Cluster Map shows the significant locations color coded by type of spatial autocorrelation. The first step before we can generate the LISA cluster map is to plot the Moran scatterplot.
@@ -331,8 +335,8 @@ Define the high-high, low-low, low-high, and high-low categories:
 
 ```{r}
 quadrant[DV >0 & C_mI>0] <- 4      
-quadrant[DV <0 & C_mI<0] <- 1      
-quadrant[DV <0 & C_mI>0] <- 2
+quadrant[DV <0 & C_mI<0] <- 2      
+quadrant[DV <0 & C_mI>0] <- 1
 quadrant[DV >0 & C_mI<0] <- 3
 ```
 
