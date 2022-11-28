@@ -323,21 +323,19 @@ nci2 <- moran.plot(hunan$Z.GDPPC, rswm_q,
 
 ```{r}
 quadrant <- vector(mode="numeric",length=nrow(localMI))
-
-DV <- hunan$GDPPC - mean(hunan$GDPPC)
-
-C_mI <- localMI[,1] - mean(localMI[,1])
-
-signif <- 0.05     
+hunan$lag_GDPPC <- lag.listw(rswm_q, hunan$GDPPC)
+DV <- hunan$lag_GDPPC - mean(hunan$lag_GDPPC)     
+LM_I <- localMI[,1] - mean(localMI[,1])     
+signif <- 0.05    
 ```
 
 Define the high-high, low-low, low-high, and high-low categories:
 
 ```{r}
-quadrant[DV >0 & C_mI>0] <- 4      
-quadrant[DV <0 & C_mI<0] <- 2      
-quadrant[DV <0 & C_mI>0] <- 1
-quadrant[DV >0 & C_mI<0] <- 3
+quadrant[DV <0 & LM_I>0] <- 1
+quadrant[DV >0 & LM_I<0] <- 2
+quadrant[DV <0 & LM_I<0] <- 3  
+quadrant[DV >0 & LM_I>0] <- 4    
 ```
 
 Place non-significant Moran in category 0.
