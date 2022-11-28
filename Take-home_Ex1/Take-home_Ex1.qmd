@@ -17,6 +17,24 @@ Developing countries are most affected by water shortages and poor water quality
 
 Through the use of appropriate global and local measures of spatial association techniques, we aim to reveal spatial patterns of non-functional water points in Nigeria.
 
+### 1.3 Nigeria's Geopolitical Zones
+
+Nigeria is divided into 6 geopolitical zones, which are namely:
+
+1.  North West
+
+2.  North East
+
+3.  North Central
+
+4.  South West
+
+5.  South East
+
+6.  South South
+
+![](images/Geopolitical_Zones_of_Nigeria.svg.png){fig-align="center"}
+
 ## 2 Import Packages and Data Sets
 
 ### 2.1 Packages
@@ -237,7 +255,7 @@ unknown <- qtm(nga_wp, "wpt unknown")+
 tmap_arrange(total, wp_functional, wp_nonfunctional, unknown, ncol=2)
 ```
 
-> The trends are not obvious when we plot the spatial distribution of water point [count]{.underline}. Instead, let's plot the spatial distribution of the water point [rate]{.underline} below.
+> There are no obvious trends when we plot the spatial distribution of water point [count]{.underline}. Instead, let's plot the spatial distribution of the water point [rate]{.underline} below.
 
 ### 5.2 Visualising spatial distribution of water point rate by LGA level
 
@@ -258,7 +276,7 @@ pct_wp_nonfunctional <- qtm(nga_wp, "pct_nonfunctional")+
 tmap_arrange(pct_wp_functional, pct_wp_nonfunctional, asp=1, ncol=2)
 ```
 
-> From the above plots, we can observe that the northern region of Nigeria generally has a higher proportion of functional water points (darker shade of red on the left graph), while the southern region has a relatively higher proportion of non-functional water points (slightly darker shade of red on the right graph).
+> From the above plots, we can observe that the north west and lower part of the north east zone generally have a higher proportion of functional water points (darker shade of red on the left graph), while the north central and southern zones has a relatively higher proportion of non-functional water points (slightly darker shade of red on the right graph).
 
 ## 6 Cluster and Outlier Analysis
 
@@ -357,7 +375,7 @@ pvalue.map <- tm_shape(nga_wp.localMI) +
 tmap_arrange(localMI.map, pvalue.map, asp=1, ncol=2)
 ```
 
-> The north-eastern region and some part of the central-south region are clusters (as indicated by the dark blue regions in the left graph), which are statistically significant (as indicated by the darker shade of blue on the right graph). We will plot the LISA cluster map next to analyse further.
+> The north-east and south-south zones contain clusters (as indicated by the dark blue regions in the left graph), which are statistically significant (as indicated by the darker shade of blue on the right graph). We will plot the LISA cluster map next to analyse further.
 
 ### 6.4 LISA Cluster Map
 
@@ -399,7 +417,7 @@ The code chunks below show the steps to prepare a LISA cluster map.
 
 -   **DV**: Derive the spatially lagged variable of interest and centers the spatially lagged variable around its mean.
 
--   **LM_I**: Center the local Moran\'s around the mean.
+-   **LM_I**: Center the local Moran's around the mean.
 
 -   **signif**: Set a statistical significance level for the local Moran.
 
@@ -456,7 +474,7 @@ LISAmap <- tm_shape(nga_wp.localMI) +
 tmap_arrange(pct_nonfunctional_map, LISAmap, asp=1, ncol=2)
 ```
 
-> From the LISA map, we can see that the north-eastern region are low-low clusters, while some parts of the central-south region are high-high clusters.
+> From the LISA map, we can see that the north-east zone has low-low clusters, while some parts of the south-south zone are high-high clusters.
 
 ## 7 Hot Spot Area Analysis
 
@@ -593,7 +611,7 @@ Gimap <-tm_shape(nga_wp.gi) +
 tmap_arrange(pct_nonfunctional_map2, Gimap, asp=1, ncol=2)
 ```
 
-> As shown on the map on the right, the northern and north-east regions are cold spots, while the southern and south-west regions are hot spots.
+> As shown on the map on the right, the north-east, north-west and south-west zones contain cold spots, while the south-south contains hot spots.
 
 #### Gi statistics using adaptive distance
 
@@ -630,4 +648,4 @@ tmap_arrange(pct_nonfunctional_map3,
              ncol=2)
 ```
 
-> Using the adaptive distance weight matrix yielded similar results - the northern and north-east regions are cold spots, while the southern and south-west regions are hot spots.
+> Using the adaptive distance weight matrix yielded similar results - the north-east (in particular), north-west and south-west zones contain cold spots, while the south-south contains hot spots.
