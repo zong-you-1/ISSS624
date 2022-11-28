@@ -204,6 +204,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
   <ul class="collapse">
   <li><a href="#background" id="toc-background" class="nav-link" data-scroll-target="#background">1.1 Background</a></li>
   <li><a href="#problem-statement" id="toc-problem-statement" class="nav-link" data-scroll-target="#problem-statement">1.2 Problem statement</a></li>
+  <li><a href="#nigerias-geopolitical-zones" id="toc-nigerias-geopolitical-zones" class="nav-link" data-scroll-target="#nigerias-geopolitical-zones">1.3 Nigeria’s Geopolitical Zones</a></li>
   </ul></li>
   <li><a href="#import-packages-and-data-sets" id="toc-import-packages-and-data-sets" class="nav-link" data-scroll-target="#import-packages-and-data-sets">2 Import Packages and Data Sets</a>
   <ul class="collapse">
@@ -271,6 +272,23 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <section id="problem-statement" class="level3">
 <h3 class="anchored" data-anchor-id="problem-statement">1.2 Problem statement</h3>
 <p>Through the use of appropriate global and local measures of spatial association techniques, we aim to reveal spatial patterns of non-functional water points in Nigeria.</p>
+</section>
+<section id="nigerias-geopolitical-zones" class="level3">
+<h3 class="anchored" data-anchor-id="nigerias-geopolitical-zones">1.3 Nigeria’s Geopolitical Zones</h3>
+<p>Nigeria is divided into 6 geopolitical zones, which are namely:</p>
+<ol type="1">
+<li><p>North West</p></li>
+<li><p>North East</p></li>
+<li><p>North Central</p></li>
+<li><p>South West</p></li>
+<li><p>South East</p></li>
+<li><p>South South</p></li>
+</ol>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="images/Geopolitical_Zones_of_Nigeria.svg.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
 </section>
 </section>
 <section id="import-packages-and-data-sets" class="level2">
@@ -470,7 +488,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </div>
 </div>
 <blockquote class="blockquote">
-<p>The trends are not obvious when we plot the spatial distribution of water point <u>count</u>. Instead, let’s plot the spatial distribution of the water point <u>rate</u> below.</p>
+<p>There are no obvious trends when we plot the spatial distribution of water point <u>count</u>. Instead, let’s plot the spatial distribution of the water point <u>rate</u> below.</p>
 </blockquote>
 </section>
 <section id="visualising-spatial-distribution-of-water-point-rate-by-lga-level" class="level3">
@@ -495,7 +513,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </div>
 </div>
 <blockquote class="blockquote">
-<p>From the above plots, we can observe that the northern region of Nigeria generally has a higher proportion of functional water points (darker shade of red on the left graph), while the southern region has a relatively higher proportion of non-functional water points (slightly darker shade of red on the right graph).</p>
+<p>From the above plots, we can observe that the north west and lower part of the north east zone generally have a higher proportion of functional water points (darker shade of red on the left graph), while the north central and southern zones has a relatively higher proportion of non-functional water points (slightly darker shade of red on the right graph).</p>
 </blockquote>
 </section>
 </section>
@@ -2179,7 +2197,7 @@ Zuru                       0.8093</code></pre>
 </div>
 </div>
 <blockquote class="blockquote">
-<p>The north-eastern region and some part of the central-south region are clusters (as indicated by the dark blue regions in the left graph), which are statistically significant (as indicated by the darker shade of blue on the right graph). We will plot the LISA cluster map next to analyse further.</p>
+<p>The north-east and south-south zones contain clusters (as indicated by the dark blue regions in the left graph), which are statistically significant (as indicated by the darker shade of blue on the right graph). We will plot the LISA cluster map next to analyse further.</p>
 </blockquote>
 </section>
 </section>
@@ -2224,7 +2242,7 @@ Zuru                       0.8093</code></pre>
 <p>The code chunks below show the steps to prepare a LISA cluster map.</p>
 <ul>
 <li><p><strong>DV</strong>: Derive the spatially lagged variable of interest and centers the spatially lagged variable around its mean.</p></li>
-<li><p><strong>LM_I</strong>: Center the local Moran's around the mean.</p></li>
+<li><p><strong>LM_I</strong>: Center the local Moran’s around the mean.</p></li>
 <li><p><strong>signif</strong>: Set a statistical significance level for the local Moran.</p></li>
 <li><p>Define the low-low (1), low-high (2), high-low (3) and high-high (4) categories, and lastly place non-significant Moran in category 0.</p></li>
 </ul>
@@ -2281,7 +2299,7 @@ Zuru                       0.8093</code></pre>
 </div>
 </div>
 <blockquote class="blockquote">
-<p>From the LISA map, we can see that the north-eastern region are low-low clusters, while some parts of the central-south region are high-high clusters.</p>
+<p>From the LISA map, we can see that the north-east zone has low-low clusters, while some parts of the south-south zone are high-high clusters.</p>
 </blockquote>
 </section>
 </section>
@@ -2658,7 +2676,7 @@ attr(,"class")
 </div>
 </div>
 <blockquote class="blockquote">
-<p>As shown on the map on the right, the northern and north-east regions are cold spots, while the southern and south-west regions are hot spots.</p>
+<p>As shown on the map on the right, the north-east, north-west and south-west zones contain cold spots, while the south-south contains hot spots.</p>
 </blockquote>
 </section>
 <section id="gi-statistics-using-adaptive-distance" class="level4">
@@ -2697,7 +2715,7 @@ attr(,"class")
 </div>
 </div>
 <blockquote class="blockquote">
-<p>Using the adaptive distance weight matrix yielded similar results - the northern and north-east regions are cold spots, while the southern and south-west regions are hot spots.</p>
+<p>Using the adaptive distance weight matrix yielded similar results - the north-east (in particular), north-west and south-west zones contain cold spots, while the south-south contains hot spots.</p>
 </blockquote>
 
 
