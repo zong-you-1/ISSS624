@@ -269,7 +269,7 @@ The correlation plot above shows that COMPUTER_PR and INTERNET_PR are highly cor
 
 ## 5 Hierarchy Cluster Analysis
 
-### 5.1  Extract clustering variables
+### 5.1 Extract clustering variables
 
 ```{r}
 cluster_vars <- shan_sf %>%
@@ -384,7 +384,7 @@ map_dbl(m, ac)
 
 The *agnes()* function functions like *hclus(),* and you can also get the agglomerative coefficient, which measures the amount of clustering structure found (values closer to 1 suggest strong clustering structure).
 
-With reference to the output above, we can see that Ward\'s method provides the strongest clustering structure among the four methods assessed. Hence, in the subsequent analysis, only Ward\'s method will be used.
+With reference to the output above, we can see that Ward's method provides the strongest clustering structure among the four methods assessed. Hence, in the subsequent analysis, only Ward's method will be used.
 
 ### 5.6 Determining optimal clusters
 
@@ -419,7 +419,7 @@ fviz_gap_stat(gap_stat)
 
 ### 5.7 Interpreting the dendrograms
 
-It\'s also possible to draw the dendrogram with a border around the selected clusters by using [*rect.hclust()*](https://stat.ethz.ch/R-manual/R-devel/library/stats/html/rect.hclust.html) of R stats. The argument *border* is used to specify the border colors for the rectangles.
+It's also possible to draw the dendrogram with a border around the selected clusters by using [*rect.hclust()*](https://stat.ethz.ch/R-manual/R-devel/library/stats/html/rect.hclust.html) of R stats. The argument *border* is used to specify the border colors for the rectangles.
 
 ```{r}
 plot(hclust_ward, cex = 0.6)
