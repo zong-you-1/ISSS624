@@ -1,6 +1,3 @@
 ---
-title: "Take-home Exercise 2"
-editor: visual
----
 
-## 
+---

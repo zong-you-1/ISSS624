@@ -622,7 +622,7 @@ rect.hclust(nongeo_cluster,
             border = 2:5)
 ```
 
-#### 5.9.1.1 Mapping the clusters formed
+### 7.2 Mapping the clusters formed
 
 ```{r}
 groups <- as.factor(cutree(nongeo_cluster, k=6))
@@ -637,7 +637,7 @@ shan_sf_ngeo_cluster <- cbind(shan_sf, as.matrix(groups)) %>%
 qtm(shan_sf_ngeo_cluster, "CLUSTER")
 ```
 
-### 5.9.2 Spatially Constrained Hierarchical Clustering
+### 7.3 Spatially Constrained Hierarchical Clustering
 
 Derive spatial distance matrix using [`st_distance()`](https://r-spatial.github.io/sf/reference/geos_measures.html) of sf package.
 
