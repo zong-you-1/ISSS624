@@ -903,4 +903,4 @@ nga_wp_Gcluster <- cbind(nga_wp, as.matrix(groups)) %>%
 qtm(nga_wp_Gcluster, "CLUSTER")
 ```
 
-> From the choropleth map above, cluster 1 is made up largely of north-east and the southern zones i.e. south-west, south-east and south-south, and cluster 2 is largely the north-central and north-west zone. Cluster 3 is found in relatively fewer areas and are found across multiple zones in fragments.
+> From the choropleth map above, cluster 1 is made up largely of the southern zones i.e. south-west, south-east and south-south, and cluster 2 is largely the remaining zones. Cluster 3 is found in relatively fewer areas in the north-west zone.

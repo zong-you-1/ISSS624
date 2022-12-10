@@ -107,6 +107,8 @@ condo_resale.sf <- st_as_sf(condo_resale,
 head(condo_resale.sf)
 ```
 
+> Note that condo_resale has 23 variables - inclusive of lat and long, while condo_resale.sf has 22 variables - inclusive of geometry column. When we convert to sf, the lat and long are 'converted' to geometry.
+
 ## 3 Exploratory Data Analysis
 
 ### 3.1 EDA using statistical graphics
