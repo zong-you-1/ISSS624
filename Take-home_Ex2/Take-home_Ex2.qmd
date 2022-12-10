@@ -43,18 +43,6 @@ Nigeria is divided into 6 geopolitical zones, which are namely:
 
 The following packages are used:
 
--   **sf**: Support for simple features, a standardised way to encode spatial vector data. Used for reading and writing data, and for projection conversions and datum transformations.
-
--   **tidyverse**: Collection of packages that are commonly used for data analysis e.g. ggplot2, dplyr, tidyr.
-
--   **tmap**: Used for drawing of thematic maps.
-
--   **spdep**: Collection of functions to create spatial weights matrix objects for spatial data analysis, and a collection of tests for spatial 'autocorrelation' such as Moran's I and Geary's C.
-
--   **funModeling**: Used for quick exploratory data analysis
-
--   
-
 -   Spatial data handling
 
     -   **sf**, **rgdal** and **spdep**
@@ -76,8 +64,6 @@ The following packages are used:
     -   **cluster**
 
     -   **ClustGeo**
-
--   
 
 ```{r}
 pacman::p_load(sf, tidyverse, tmap, spdep, funModeling, rgdal, ClustGeo, ggpubr, cluster, factoextra, NbClust, heatmaply, corrplot, psych, GGally)
@@ -690,149 +676,7 @@ nga_wp_sp.nb <- poly2nb(nga_wp_sp)
 summary(nga_wp_sp.nb)
 ```
 
-Note that there is one region with 0 neighbours i.e. region 86. We will remove this region as it will not be required in the minimum spanning tree.
-
-```{r}
-nga_wp_sp <- nga_wp %>% 
-  filter(!row_number() %in% c(86)) %>%
-  as_Spatial()
-nga_wp_sp.nb <- poly2nb(nga_wp_sp)
-summary(nga_wp_sp.nb)
-```
-
-Next, we can visualise the network on the map below. The first plot command provides the LGA boundaries, while the second plot provides the neighbour list. We also set the color to blue and specify add=TRUE to plot the network on top of the boundaries.
-
-```{r}
-plot(nga_wp_sp, 
-     border=grey(.5))
-plot(nga_wp_sp.nb, 
-     coordinates(nga_wp_sp), 
-     col="blue", 
-     add=TRUE)
-```
-
-### 6.3 Computing minimum spanning tree
-
-#### 6.3.1 Calculating edge costs
-
-`nbcosts()` of **spdep** package is used to compute the cost of each edge. It is the distance between it nodes. This function compute this distance using a data.frame with observations vector in each node.
-
-```{r}
-#| eval: false
-#lcosts <- nbcosts(nga_wp_sp.nb, nga_wp)
-```
-
-For each observation, this gives the pairwise dissimilarity between its values on the five variables and the values for the neighbouring observation (from the neighbour list). Basically, this is the notion of a generalised weight for a spatial weights matrix.
-
-Next, We will incorporate these costs into a weights object in the same way as we did in the calculation of inverse of distance weights. In other words, we convert the neighbour list to a list weights object by specifying the just computed ***lcosts*** as the weights.
-
-In order to achieve this, [*nb2listw()*](https://r-spatial.github.io/spdep/reference/nb2listw.html) of **spdep** package is used as shown in the code chunk below.
-
-Note that we specify the *style* as **B** to make sure the cost values are not row-standardised.
-
-```{r}
-#| eval: false
-shan.w <- nb2listw(shan.nb, 
-                   lcosts, 
-                   style="B")
-summary(shan.w)
-```
-
-#### Computing minimum spanning tree
-
-```{r}
-#| eval: false
-shan.mst <- mstree(shan.w)
-
-class(shan.mst)
-
-dim(shan.mst)
-```
-
-```{r}
-#| eval: false
-head(shan.mst)
-```
-
-```{r}
-#| eval: false
-plot(shan_sp, border=gray(.5))
-plot.mst(shan.mst, 
-         coordinates(shan_sp), 
-         col="blue", 
-         cex.lab=0.7, 
-         cex.circles=0.005, 
-         add=TRUE)
-```
-
-### 6.4 Computing spatially constrained clusters using SKATER method
-
-The *skater()* takes three mandatory arguments: - the first two columns of the MST matrix (i.e. not the cost), - the data matrix (to update the costs as units are being grouped), and - the number of cuts. Note: It is set to **one less than the number of clusters**. So, the value specified is **not** the number of clusters, but the number of cuts in the graph, one less than the number of clusters.
-
-```{r}
-#| eval: false
-clust6 <- skater(edges = shan.mst[,1:2], 
-                 data = shan_ict, 
-                 method = "euclidean", 
-                 ncuts = 5)
-```
-
-```{r}
-#| eval: false
-str(clust6)
-```
-
-Check cluster assignment:
-
-```{r}
-#| eval: false
-ccs6 <- clust6$groups
-ccs6
-```
-
-Find out how many observations are in each cluster:
-
-```{r}
-#| eval: false
-table(ccs6)
-```
-
-Plot the pruned tree that shows the five clusters on top of the townshop area.
-
-```{r}
-#| eval: false
-plot(shan_sp, border=gray(.5))
-plot(clust6, 
-     coordinates(shan_sp), 
-     cex.lab=.7,
-     groups.colors=c("red","green","blue", "brown", "pink"),
-     cex.circles=0.005, 
-     add=TRUE)
-```
-
-### 6.5 Visualising the clusters in choropleth map
-
-```{r}
-#| eval: false
-groups_mat <- as.matrix(clust6$groups)
-shan_sf_spatialcluster <- cbind(shan_sf_cluster, as.factor(groups_mat)) %>%
-  rename(`SP_CLUSTER`=`as.factor.groups_mat.`)
-qtm(shan_sf_spatialcluster, "SP_CLUSTER")
-```
-
-```{r}
-#| eval: false
-hclust.map <- qtm(shan_sf_cluster,
-                  "CLUSTER") + 
-  tm_borders(alpha = 0.5) 
-
-shclust.map <- qtm(shan_sf_spatialcluster,
-                   "SP_CLUSTER") + 
-  tm_borders(alpha = 0.5) 
-
-tmap_arrange(hclust.map, shclust.map,
-             asp=NA, ncol=2)
-```
+> Note that there is one region with 0 neighbours i.e. region 86. Thus, the SKATER method may not be appropriate as the minimum spanning tree requires all regions to have at least a neighbour. We can consider remove the region, since there is only one such region without neighbour, but we will instead explore another spatially constrained clustering method called the ClustGeo method.
 
 ## 8 Spatially Constrained Clustering - ClustGeo Method
 
@@ -904,3 +748,34 @@ qtm(nga_wp_Gcluster, "CLUSTER")
 ```
 
 > From the choropleth map above, cluster 1 is made up largely of the southern zones i.e. south-west, south-east and south-south, and cluster 2 is largely the remaining zones. Cluster 3 is found in relatively fewer areas in the north-west zone.
+
+### 8.4 Visualising clustering variables
+
+We can use the code chunk below to plot the parallel coordinate plot to study the clustering variables by cluster.
+
+```{r}
+ggparcoord(data = nga_wp_ngeo_cluster, 
+           columns = c(7,8,10,11,13,15,19,21), 
+           scale = "uniminmax",
+           alphaLines = 0.2,
+           boxplot = TRUE, 
+           title = "Multiple Parallel Coordinates Plots of Water Point Variables by Cluster") +
+  facet_grid(~ CLUSTER) + 
+  theme(axis.text.x = element_text(angle = 90))
+```
+
+> The parallel coordinate plot does not reveal clear trends between the clusters. In general, cluster 2 is low in terms of crucialness and percentage of non-functional water points. Cluster 1 does not display clear trends, while cluster 3 displays similar trends as cluster 2.
+
+```{r}
+nga_wp_ngeo_cluster %>% 
+  st_set_geometry(NULL) %>%
+  group_by(CLUSTER) %>%
+  summarise(mean_wpt_functional = mean(wpt.functional),
+            mean_wpt_non_functional = mean(wpt.non.functional),
+            mean_pct_functional = mean(pct_functional),
+            mean_pct_nonfunctional = mean(pct_nonfunctional),
+            mean_pct_handpump = mean(pct_handpump),
+            mean_pct_rural = mean(pct_rural),
+            mean_pct_crucial = mean(pct_crucial),
+            mean_pct_pressure = mean(pct_pressure))
+```

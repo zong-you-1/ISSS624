@@ -1,0 +1,850 @@
+---
+title: "Take Home Exercise 2"
+editor: visual
+execute: 
+  warning: false
+---
+
+
+## 1 Overview
+
+### 1.1 Background
+
+Water is an important resource and access to clean water is critical to human health. However, over 40% of the global population does not have access to sufficient clean water. By 2025, 1.8 billion people will be living in countries or regions with absolute water scarcity, according to UN-Water. The lack of water poses a major threat to several sectors, including food security - Agriculture uses about 70% of the world's accessible freshwater.
+
+Developing countries are most affected by water shortages and poor water quality. Up to 80% of illnesses in the developing world are linked to inadequate water and sanitation. Despite technological advancement, providing clean water to the rural community is still a major development issues in many countries globally, especially countries in the Africa continent.
+
+### 1.2 Problem statement
+
+We aim to delineate water points in Nigeria through the regionalisation of multivariate water point attributes with non-spatially constrained and spatially constrained clustering methods.
+
+### 1.3 Nigeria's Geopolitical Zones
+
+Nigeria is divided into 6 geopolitical zones, which are namely:
+
+1.  North West
+
+2.  North East
+
+3.  North Central
+
+4.  South West
+
+5.  South East
+
+6.  South South
+
+![](images/Geopolitical_Zones_of_Nigeria.svg.png){fig-align="center"}
+
+## 2 Import Packages and Data Sets
+
+### 2.1 Packages
+
+***p_load*** function of **pacman** package is used to install and load the required packages into R environment.
+
+The following packages are used:
+
+-   Spatial data handling
+
+    -   **sf**, **rgdal** and **spdep**
+
+-   Attribute data handling
+
+    -   **tidyverse**, especially **readr**, **ggplot2** and **dplyr**
+
+-   Choropleth mapping
+
+    -   **tmap**
+
+-   Multivariate data visualisation and analysis
+
+    -   **coorplot**, **ggpubr**, and **heatmaply**
+
+-   Cluster analysis
+
+    -   **cluster**
+
+    -   **ClustGeo**
+
+
+```{r}
+pacman::p_load(sf, tidyverse, tmap, spdep, funModeling, rgdal, ClustGeo, ggpubr, cluster, factoextra, NbClust, heatmaply, corrplot, psych, GGally)
+```
+
+
+### 2.2 Data sets
+
+Two data sets are used:
+
+-   WPdx+ data set from [WPdx Global Data Repositories](https://www.waterpointdata.org/access-data/) which provides data on functional and non-functional water points in Nigeria
+
+-   Nigeria Level-2 Administrative Boundary (also known as Local Government Area) polygon features GIS data from [geoBoundaries](https://www.geoboundaries.org/).
+
+#### Importing WPdx+ data set
+
+`st_read()` function of **pacman** package is used to import *geo_export* shapefile into R environment, and save the imported geospatial data into simple feature data table. Note that `filter()` of **dpylr** package is also used to extract water point records of Nigeria.
+
+> [**Note 1:**]{.underline} The original data will be transformed and eventually saved as a smaller file.
+>
+> [**Note 2:**]{.underline} Avoid performing transformation e.g. `st_transform()`as we will be using `st_intersect()` of **sf** package in the later stage of the geoprocessing, and this function only works correctly if the geospatial data is in geographic coordinate system i.e. WGS84.
+
+
+```{r}
+#| eval: false
+wp_nga <- st_read(dsn = "geodata",
+              layer = "geo_export",
+              crs = 4326) %>%
+  filter(clean_coun == "Nigeria")
+```
+
+
+#### Importing Nigeria's level-2 administrative boundary
+
+`st_read()` of **sf** package is used to import *geoBoundaries-NGA-ADM2* shapefile into R environment and save the imported geospatial data into simple feature data table. We also make the *shapeName* unique below as some of them contains duplicates e.g. Bassa.
+
+
+```{r}
+#| eval: false
+nga_LGA <- st_read(dsn = "geodata",
+                   layer = "geoBoundaries-NGA-ADM2",
+                   crs = 4326)
+
+nga_LGA$shapeName <- with(nga_LGA, make.unique(as.character(shapeName)))
+```
+
+
+## 3 Data Wrangling
+
+### 3.1 Exploratory data analysis
+
+#### 3.1.1 *status_cle*
+
+`freq()` of **funModeling** package is used to display the distribution of *status_cle*, which is on the status of the water point.
+
+
+```{r}
+#| eval: false
+freq(data = wp_nga,
+     input = "status_cle")
+```
+
+
+![](images/Freq%20before%20data%20cleaning.png){fig-align="center"}
+
+From the above graph, we can see that there are more than 10,000 records with N/A value for *status_cle*.
+
+`replace_na` of **tidyr** package and `mutate` of **dplyr** package are used to replace the missing values to "Unknown".
+
+
+```{r}
+#| eval: false
+wp_nga <- wp_nga %>%
+  mutate(status_cle = replace_na(status_cle, "Unknown"))
+```
+
+
+Plot the frequency graph again to check that there are no more N/A values.
+
+
+```{r}
+#| eval: false
+freq(data = wp_nga,
+     input = "status_cle")
+```
+
+
+![](images/Freq%20after%20data%20cleaning.png){fig-align="center"}
+
+> Note that less than half (48.29%) of the water points are functional!
+
+#### 3.1.2 *X_water_tec*
+
+Similarly, we check the distribution of *X_water_tec*, which is the water point technology used to transport the water from source to point of collection e.g. hand pump.
+
+
+```{r}
+#| eval: false
+wp_nga <- wp_nga %>%
+  mutate(X_water_tec = replace_na(X_water_tec, "Unknown"))
+
+freq(data = wp_nga,
+     input = "X_water_tec")
+```
+
+
+![](images/X_water_tec_Freq.png){fig-align="center"}
+
+> Note that the most common water point technology used is hand pump (61.84%)!
+
+#### 3.1.3 *is_urban*
+
+Next, we check the distribution of *is_urban*, which is a binary variable indicating whether the water point is in an urban area.
+
+
+```{r}
+#| eval: false
+freq(data = wp_nga,
+     input = "is_urban")
+```
+
+
+![](images/Is_urban%20Freq.png){fig-align="center"}
+
+> Note that most of the water points are found in rural areas!
+
+#### 3.1.4 *usage_cap*
+
+Next, using `hist()` and `table()`, we check the distribution of *usage_cap*, which is maximum users recommended for usage for the water point.
+
+
+```{r}
+#| eval: false
+hist(x=wp_nga$usage_cap)
+table(wp_nga$usage_cap)
+```
+
+
+![](images/Usage%20cap%20Hist.png){fig-align="center"}
+
+> Note that most of the water points are capped at 300 users or 1000 users.
+
+#### 3.1.5 *crucialnes*
+
+Next, we check the distribution of *crucialnes*, which is the ratio of potential users to the total local population within a 1km radius of the water point. Crucialness provides a measure of water system redundancy.
+
+For example, if there is only 1 water point within a 1km radius, the water point crucialness score is 100%, meaning that there are no nearby alternatives. If there are two functional water points within 1km, the crucialness score for each point will be \~50% indicating there is some redundancy in the system, so if one water point is broken down, users have an alternative water point available. For non-functional water points, the crucialness score shows how important the water point would be if it were to be rehabilitated.
+
+
+```{r}
+#| eval: false
+crucialnes_hist <- ggplot(data=wp_nga, 
+             aes(x= `crucialnes`)) +
+  geom_histogram(bins=20, 
+                 color="black", 
+                 fill="light blue")
+
+crucialnes_box <- ggplot(data=wp_nga, 
+             aes(x= `crucialnes`)) +
+  geom_boxplot(color="black", 
+                 fill="light blue")
+ggarrange(crucialnes_hist, crucialnes_box,
+          ncol = 2, 
+          nrow = 1)
+```
+
+
+![](images/Crucialnes%20Hist%20and%20Box.png){fig-align="center"}
+
+
+```{r}
+#| eval: false
+summary(wp_nga$crucialnes)
+```
+
+
+![](images/Crucialnes%20Summary.JPG){fig-align="center"}
+
+> Note that most of the water points are very crucial to the users (*crucialnes* = 1.0). The 1st quartile is 0.130, median is 0.304, mean is 0.414, and 3rd quartile is 0.628.
+
+#### 3.1.6 *pressure*
+
+Next, using `boxplot()` we check the distribution of *pressure*, which is the ratio of the number of people assigned to that water point over the theoretical maximum population which can be served based on the technology.
+
+If a point is serving less than the recommended maximum, the utilization score will be less than 100% (i.e., 250/500 = 0.5). If a point is serving more than the recommended maximum, the utilization score will be over 100% (i.e., 750/500 = 150%).
+
+
+```{r}
+#| eval: false
+pressure_hist <- ggplot(data=wp_nga, 
+             aes(x= `pressure`)) +
+  geom_histogram(bins=20, 
+                 color="black", 
+                 fill="light blue")
+
+pressure_box <- ggplot(data=wp_nga, 
+             aes(x= `pressure`)) +
+  geom_boxplot(color="black", 
+                 fill="light blue")
+ggarrange(pressure_hist, pressure_box,
+          ncol = 2, 
+          nrow = 1)
+```
+
+
+![](images/Pressure%20Hist%20and%20Box.png){fig-align="center"}
+
+
+```{r}
+#| eval: false
+summary(wp_nga$pressure)
+```
+
+
+![](images/Pressure%20Summary.JPG){fig-align="center"}
+
+> From the boxplot above, there is the presence of extreme outliers, which means that the water point is facing high pressure i.e. heavily used. Note that the median is 1.183, 3rd quartile is 3.103 while the maximum is 776.970.
+
+### 3.2 Percentage of functional and non-functional water point
+
+#### 3.2.1 Extracting water point data
+
+In the code chunks below, `filter()` of **dplyr** package is used to select functional and non-functional water points, and water points with Unknown class.
+
+
+```{r}
+#| eval: false
+wpt_functional <- (wp_nga %>%
+                     filter(status_cle %in%
+                              c("Functional",
+                                "Functional but not in use",
+                                "Functional but needs repair")
+                            )
+                   )
+```
+
+```{r}
+#| eval: false
+wpt_nonfunctional <- (wp_nga %>%
+                     filter(status_cle %in%
+                              c("Abandoned",
+                                "Abandoned/Decommissioned",
+                                "Non functional due to dry season",
+                                "Non-Functional due to dry season",
+                                "Non-Functional")
+                            )
+                   )
+```
+
+```{r}
+#| eval: false
+wpt_unknown <- (wp_nga %>%
+                     filter(status_cle == "Unknown")
+                )
+```
+
+
+#### 3.2.2 Performing point-in-polygon count
+
+`st_intersects()` of **sf** package is used to identify the water points located inside each LGA level, and `lengths()` of Base R is used to calculate the number of water points inside each LGA level.
+
+
+```{r}
+#| eval: false
+nga_wp <- nga_LGA %>% 
+  mutate(`total wpt` = lengths(st_intersects(nga_LGA, wp_nga))) %>%
+  mutate(`wpt functional` = lengths(st_intersects(nga_LGA, wpt_functional))) %>%
+  mutate(`wpt non-functional` = lengths(st_intersects(nga_LGA, wpt_nonfunctional))) %>%
+  mutate(`wpt unknown` = lengths(st_intersects(nga_LGA, wpt_unknown)))
+```
+
+
+#### 3.2.3 Computing percentage of functional and non-functional water point at LGA level
+
+`mutate()` of **dplyr** package is used to compute the proportion of functional and non-functional water at LGA level.
+
+
+```{r}
+#| eval: false
+nga_wp <- nga_wp %>%
+  mutate(pct_functional = `wpt functional`/`total wpt`) %>%
+  mutate(pct_nonfunctional = `wpt non-functional`/`total wpt`)
+
+nga_wp$pct_functional[is.nan(nga_wp$pct_functional)]<- 0
+nga_wp$pct_nonfunctional[is.nan(nga_wp$pct_nonfunctional)]<- 0
+```
+
+
+### 3.3 Percentage of main water point technology (i.e. Hand Pump)
+
+#### 3.3.1 Extracting water point data
+
+In the code chunks below, `filter()` of **dplyr** package is used to select water points using hand pump as its technology.
+
+
+```{r}
+#| eval: false
+wpt_handpump <- (wp_nga %>%
+                   filter(X_water_tec == "Hand Pump")
+                 )
+```
+
+
+#### 3.3.2 Performing point-in-polygon count
+
+`st_intersects()` of **sf** package is used to identify the water points located inside each LGA level, and `lengths()` of Base R is used to calculate the number of water points inside each LGA level.
+
+
+```{r}
+#| eval: false
+nga_wp <- nga_wp %>% 
+  mutate(`wpt hand pump` = lengths(st_intersects(nga_LGA, wpt_handpump)))
+```
+
+
+#### 3.3.3 Computing percentage of water point using hand pump
+
+`mutate()` of **dplyr** package is used to compute the proportion of water points using hand pump, at LGA level.
+
+
+```{r}
+#| eval: false
+nga_wp <- nga_wp %>%
+  mutate(pct_handpump = `wpt hand pump`/`total wpt`)
+
+nga_wp$pct_handpump[is.nan(nga_wp$pct_handpump)]<- 0
+```
+
+
+### 3.4 Percentage of rural water points
+
+#### 3.4.1 Extracting water point data
+
+In the code chunks below, `filter()` of **dplyr** package is used to select rural water points i.e. *is_urban* = False.
+
+
+```{r}
+#| eval: false
+wpt_rural <- (wp_nga %>%
+                   filter(is_urban == "False")
+                 )
+```
+
+
+#### 3.4.2 Performing point-in-polygon count
+
+`st_intersects()` of **sf** package is used to identify the water points located inside each LGA level, and `lengths()` of Base R is used to calculate the number of water points inside each LGA level.
+
+
+```{r}
+#| eval: false
+nga_wp <- nga_wp %>% 
+  mutate(`wpt rural` = lengths(st_intersects(nga_LGA, wpt_rural)))
+```
+
+
+#### 3.4.3 Computing percentage of rural water points
+
+`mutate()` of **dplyr** package is used to compute the proportion of rural water points, at LGA level.
+
+
+```{r}
+#| eval: false
+nga_wp <- nga_wp %>%
+  mutate(pct_rural = `wpt rural`/`total wpt`)
+
+nga_wp$pct_rural[is.nan(nga_wp$pct_rural)]<- 0
+```
+
+
+### 3.5 Percentage of water point with usage capacity \< 1000
+
+#### 3.5.1 Extracting water point data
+
+In the code chunks below, `filter()` of **dplyr** package is used to select water points with maximum recommended usage capacity that is less than 1000.
+
+
+```{r}
+#| eval: false
+wpt_usagecapl1000 <- (wp_nga %>%
+                   filter(usage_cap < 1000)
+                 )
+```
+
+
+#### 3.5.2 Performing point-in-polygon count
+
+`st_intersects()` of **sf** package is used to identify the water points located inside each LGA level, and `lengths()` of Base R is used to calculate the number of water points inside each LGA level.
+
+
+```{r}
+#| eval: false
+nga_wp <- nga_wp %>% 
+  mutate(`wpt usage cap less 1000` = lengths(st_intersects(nga_LGA, wpt_usagecapl1000)))
+```
+
+
+#### 3.5.3 Computing percentage of water point with usage capacity \< 1000
+
+`mutate()` of **dplyr** package is used to compute the proportion of water point with usage capacity \<1000, at LGA level.
+
+
+```{r}
+#| eval: false
+nga_wp <- nga_wp %>%
+  mutate(pct_usagecapl1000 = `wpt usage cap less 1000`/`total wpt`)
+
+nga_wp$pct_usagecapl1000[is.nan(nga_wp$pct_usagecapl1000)]<- 0
+```
+
+
+### 3.6 Percentage of water point with top 25% crucialness i.e. crucialnes \> 0.628
+
+#### 3.6.1 Extracting water point data
+
+In the code chunks below, `filter()` of **dplyr** package is used to select water points with *crucialnes* \> 0.628 (upper quartile).
+
+
+```{r}
+#| eval: false
+wpt_crucialnes <- (wp_nga %>%
+                   filter(crucialnes > 0.628)
+                 )
+```
+
+
+#### 3.6.2 Performing point-in-polygon count
+
+`st_intersects()` of **sf** package is used to identify the water points located inside each LGA level, and `lengths()` of Base R is used to calculate the number of water points inside each LGA level.
+
+
+```{r}
+#| eval: false
+nga_wp <- nga_wp %>% 
+  mutate(`wpt crucial` = lengths(st_intersects(nga_LGA, wpt_crucialnes)))
+```
+
+
+#### 3.6.3 Computing percentage of water point with crucialnes \> 0.628
+
+`mutate()` of **dplyr** package is used to compute the proportion of water point with *crucialnes* \> 0.628.
+
+
+```{r}
+#| eval: false
+nga_wp <- nga_wp %>%
+  mutate(pct_crucial = `wpt crucial`/`total wpt`)
+
+nga_wp$pct_crucial[is.nan(nga_wp$pct_crucial)]<- 0
+```
+
+
+### 3.7 Percentage of water point with top 50% pressure i.e. pressure \> 1.183
+
+#### 3.7.1 Extracting water point data
+
+In the code chunks below, `filter()` of **dplyr** package is used to select water points with *pressure* \> 1.183 (median).
+
+
+```{r}
+#| eval: false
+wpt_pressure <- (wp_nga %>%
+                   filter(pressure > 1.183)
+                 )
+```
+
+
+#### 3.7.2 Performing point-in-polygon count
+
+`st_intersects()` of **sf** package is used to identify the water points located inside each LGA level, and `lengths()` of Base R is used to calculate the number of water points inside each LGA level.
+
+
+```{r}
+#| eval: false
+nga_wp <- nga_wp %>% 
+  mutate(`wpt pressure` = lengths(st_intersects(nga_LGA, wpt_pressure)))
+```
+
+
+#### 3.7.3 Computing percentage of water point with pressure \> 1.183
+
+`mutate()` of **dplyr** package is used to compute the proportion of water point with *pressure* \> 1.183.
+
+
+```{r}
+#| eval: false
+nga_wp <- nga_wp %>%
+  mutate(pct_pressure = `wpt pressure`/`total wpt`)
+
+nga_wp$pct_pressure[is.nan(nga_wp$pct_pressure)]<- 0
+```
+
+
+### 3.8 Transforming the projected coordinate system
+
+`st_transform()` of **sf** package is used to transform the to one of Nigeria's Projected Coordinate Systems (EPSG: 26391, 26392, and 26303).
+
+
+```{r}
+#| eval: false
+nga_wp <- st_transform(nga_wp, 
+                       crs = 26392)
+```
+
+
+### 3.9 Saving the Analytical Data Table
+
+Lastly, `write_rds()` of **readr** package is used to save *nga_wp* to *nga_wp.rds*, which is saved in *geodata* sub-folder.
+
+
+```{r}
+#| eval: false
+write_rds(nga_wp, "geodata/nga_wp.rds")
+```
+
+
+## 4 Import Cleaned Data
+
+`read_rds()` of **readr** package is used to read the saved *nga_wp.rds* in the *geodata* sub-folder.
+
+
+```{r}
+nga_wp <- read_rds("geodata/nga_wp.rds")
+```
+
+```{r}
+head(nga_wp)
+```
+
+
+## 5 Correlation Analysis
+
+Before we perform cluster analysis, we should ensure that the cluster variables are not highly correlated.
+
+
+```{r}
+nga_wp_no_geom <- nga_wp %>%
+  st_set_geometry(NULL)
+```
+
+```{r}
+cluster_vars.cor = cor(nga_wp_no_geom[,c(7,8,10,11,13,15,17,19,21)])
+corrplot.mixed(cluster_vars.cor,
+         lower = "ellipse", 
+               upper = "number",
+               tl.pos = "lt",
+               diag = "l",
+               tl.col = "black")
+```
+
+
+The correlation plot above shows that *pct_handpump* and *pct_usagecapl1000* are highly correlated. We will thus drop one of them in the cluster analysis below.
+
+## 6 Hierarchy Cluster Analysis
+
+### 6.1 Extract clustering variables
+
+Remember to exclude *pct_usagecapl1000* as it is highly correlated with *pct_handpump*.
+
+
+```{r}
+cluster_vars <- nga_wp_no_geom %>%
+  select("shapeName", "wpt functional", "wpt non-functional", "pct_functional", "pct_nonfunctional", "pct_handpump", "pct_rural", "pct_crucial", "pct_pressure")
+head(cluster_vars,10)
+```
+
+
+Next, we set *shapeName* as the row name, replacing the row numbers, and then delete the *shapeName* column.
+
+
+```{r}
+row.names(cluster_vars) <- cluster_vars$"shapeName"
+nga_wp_no_geom <- select(cluster_vars, c(2:9))
+```
+
+
+### 6.2 Computing proximity matrix
+
+dist() is used to calculate the proximity matrix. In the code chunk below, we compute the proximity matrix using *euclidean* method.
+
+
+```{r}
+proxmat <- dist(nga_wp_no_geom, method = 'euclidean') 
+```
+
+
+### 6.3 Selecting the optimal clustering algorithm for hierarchial clustering
+
+
+```{r}
+m <- c( "average", "single", "complete", "ward")
+names(m) <- c( "average", "single", "complete", "ward")
+
+ac <- function(x) {
+  agnes(nga_wp_no_geom, method = x)$ac
+}
+
+map_dbl(m, ac)
+```
+
+
+The agglomerative coefficients from the `agnes()` function above indicates that Ward's method provides the strongest clustering structure (closest to 1). Thus, we will use Ward's method in the subsequent analysis.
+
+### 6.4 Determining optimal clusters
+
+We will use the gap statistic method to determine the optimal clusters. Other commonly used methods are the elbow method and average silhouette method, but they will not be used here.
+
+The gap statistic compares the total within intra-cluster variation for different values of k with their expected values under null reference distribution of the data. The estimate of the optimal clusters will be value that maximize the gap statistic (i.e., that yields the largest gap statistic). This means that the clustering structure is far away from the random uniform distribution of points.
+
+
+```{r}
+set.seed(12345)
+gap_stat <- clusGap(nga_wp_no_geom, 
+                    FUN = hcut, 
+                    nstart = 25, 
+                    K.max = 10, 
+                    B = 50)
+# Print the result
+print(gap_stat, method = "firstmax")
+```
+
+```{r}
+fviz_gap_stat(gap_stat)
+```
+
+
+> We will select 3 clusters as it has the highest score among the clusters of size 3 and above.
+
+### 6.5 Visually-driven hierarchical clustering analysis
+
+`heatmaply()` is used to build highly interactive cluster heatmap or static cluster heatmap. We first transform *nga_wp_no_geom* into a data matrix, before building the heatmap.
+
+
+```{r}
+nga_wp_no_geom_mat <- data.matrix(nga_wp_no_geom)
+heatmaply(normalize(nga_wp_no_geom_mat),
+          Colv=NA,
+          dist_method = "euclidean",
+          hclust_method = "ward.D",
+          seriate = "OLO",
+          colors = Blues,
+          k_row = 3,
+          margins = c(NA,200,60,NA),
+          fontsize_row = 2,
+          fontsize_col = 5,
+          main="Geographic Segmentation of Nigeria LGA Level by Water Point Attributes",
+          xlab = "Water Point Attributes",
+          ylab = "LGA Levels of Nigeria"
+          )
+```
+
+
+> However, as there are 774 LGA levels, it is hard to make sense and gather insights from the graph. Let's try out another method below.
+
+### 6.6 Mapping the clusters formed
+
+`cutree()` of R Base is used to derive a 3-cluster model, and then we will map the cluster and plot the choropleth map to visualise the clusters.
+
+
+```{r}
+hclust_ward <- hclust(proxmat, method = 'ward.D')
+groups <- as.factor(cutree(hclust_ward, k=3))
+```
+
+```{r}
+nga_wp_cluster <- cbind(nga_wp, as.matrix(groups)) %>%
+  rename(`CLUSTER`=`as.matrix.groups.`)
+```
+
+```{r}
+qtm(nga_wp_cluster, "CLUSTER")
+```
+
+
+> From the choropleth map above, cluster 1 is made up largely of north-east and the southern zones i.e. south-west, south-east and south-south, and cluster 2 is largely the north-central zone. In general, the clusters are rather fragmented. This is a limitation of non-spatial clustering algorithm such as hierarchical cluster analysis method.
+
+## 7 Spatially Constrained Clustering - SKATER approach
+
+### 7.1 Converting into SpatialPolygonsDataFrame
+
+We would have to first convert *nga_wp* into SpatialPolygonsDataFrame which is supported by the SKATER function.
+
+
+```{r}
+nga_wp_sp <- as_Spatial(nga_wp)
+```
+
+
+### 7.2 Computing Neighbour List
+
+`poly2nb()` of **spdep** package is used to compute the neighbours list from the polygon list.
+
+
+```{r}
+nga_wp_sp.nb <- poly2nb(nga_wp_sp)
+summary(nga_wp_sp.nb)
+```
+
+
+> Note that there is one region with 0 neighbours i.e. region 86. Thus, the SKATER method may not be appropriate as the minimum spanning tree requires all regions to have at least a neighbour. We can consider remove the region, since there is only one such region without neighbour, but we will instead explore another spatially constrained clustering method called the ClustGeo method.
+
+## 8 Spatially Constrained Clustering - ClustGeo Method
+
+### 8.1 Ward-like hierarchical clustering: ClustGeo
+
+Note that the constraint for ClustGeo method is that it works only for Ward method.
+
+
+```{r}
+nongeo_cluster <- hclustgeo(proxmat)
+plot(nongeo_cluster, cex = 0.5)
+rect.hclust(nongeo_cluster, 
+            k = 3, 
+            border = 2:5)
+```
+
+
+Again, it is hard to read the dendrogram, so let's plot it on a map instead.
+
+### 8.2 Mapping the clusters formed
+
+Let's map out the cluster and plot the choropleth map for visualisation.
+
+
+```{r}
+groups <- as.factor(cutree(nongeo_cluster, k=3))
+```
+
+```{r}
+nga_wp_ngeo_cluster <- cbind(nga_wp, as.matrix(groups)) %>%
+  rename(`CLUSTER` = `as.matrix.groups.`)
+```
+
+```{r}
+qtm(nga_wp_ngeo_cluster, "CLUSTER")
+```
+
+
+> From the choropleth map above, cluster 1 is made up largely of north-east and the southern zones i.e. south-west, south-east and south-south, and cluster 2 is largely the north-central and north-west zone. Cluster 3 is found in relatively fewer areas and are found across multiple zones in fragments.
+
+### 8.3 Spatially Constrained Hierarchical Clustering
+
+Next, we will derive spatial distance matrix using `st_distance()` of **sf** package before proceeding with spatially constrained hierachical clustering.
+
+
+```{r}
+dist <- st_distance(nga_wp, nga_wp)
+distmat <- as.dist(dist)
+```
+
+
+`choicealpha()` will be used to determine a suitable value for the mixing parameter alpha as shown in the code chunk below.
+
+
+```{r}
+cr <- choicealpha(proxmat, distmat, range.alpha = seq(0, 1, 0.1), K=3, graph = TRUE)
+```
+
+
+> D0 is attribute based, while D1 is geospatial based. With reference to the graphs above, **alpha = 0.3** is approximately the value to maximise both D0 and D1 at the same time. This is the case for both the original graph and normalised graph, which tends to be used when data is found to be highly skewed)
+
+
+```{r}
+clustG <- hclustgeo(proxmat, distmat, alpha = 0.3)
+```
+
+```{r}
+groups <- as.factor(cutree(clustG, k=3))
+```
+
+```{r}
+nga_wp_Gcluster <- cbind(nga_wp, as.matrix(groups)) %>%
+  rename(`CLUSTER` = `as.matrix.groups.`)
+```
+
+```{r}
+qtm(nga_wp_Gcluster, "CLUSTER")
+```
+
+
+> From the choropleth map above, cluster 1 is made up largely of the southern zones i.e. south-west, south-east and south-south, and cluster 2 is largely the remaining zones. Cluster 3 is found in relatively fewer areas in the north-west zone.
+
