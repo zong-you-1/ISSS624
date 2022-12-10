@@ -505,14 +505,29 @@ tm_shape(condo_resale.sf.adaptive) +
 tmap_mode("plot")
 ```
 
-By URA Planning Region
+#### 5.3.3 Visualising coefficient estimates
+
+The sync argument allows both maps to be adjusted in a synchronized manner.
 
 ```{r}
-tm_shape(mpsz_svy21[mpsz_svy21$REGION_N=="CENTRAL REGION", ])+
-  tm_polygons()+
-tm_shape(condo_resale.sf.adaptive) + 
-  tm_bubbles(col = "Local_R2",
-           size = 0.15,
-           border.col = "gray60",
-           border.lwd = 1)
+tmap_mode("view")
+AREA_SQM_SE <- tm_shape(mpsz_svy21)+
+  tm_polygons(alpha = 0.1) +
+tm_shape(condo_resale.sf.adaptive) +  
+  tm_dots(col = "AREA_SQM_SE",
+          border.col = "gray60",
+          border.lwd = 1) +
+  tm_view(set.zoom.limits = c(11,14))
+
+AREA_SQM_TV <- tm_shape(mpsz_svy21)+
+  tm_polygons(alpha = 0.1) +
+tm_shape(condo_resale.sf.adaptive) +  
+  tm_dots(col = "AREA_SQM_TV",
+          border.col = "gray60",
+          border.lwd = 1) +
+  tm_view(set.zoom.limits = c(11,14))
+
+tmap_arrange(AREA_SQM_SE, AREA_SQM_TV, 
+             asp=1, ncol=2,
+             sync = TRUE)
 ```

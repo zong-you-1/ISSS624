@@ -713,7 +713,7 @@ plot(nga_wp_sp.nb,
 
 ### 6.3 Computing minimum spanning tree
 
-#### 6.3.1 Calculating edge costs 
+#### 6.3.1 Calculating edge costs
 
 `nbcosts()` of **spdep** package is used to compute the cost of each edge. It is the distance between it nodes. This function compute this distance using a data.frame with observations vector in each node.
 
